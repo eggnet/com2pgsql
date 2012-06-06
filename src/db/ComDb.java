@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.ComResources.CommType;
 
+import models.BugzillaTO;
 import models.Change;
 import models.Item;
 import models.Link;
@@ -52,7 +53,7 @@ public class ComDb extends DbConnection
 		}
 	}
 	
-	public boolean insertItem(Item item) {
+	public int insertItem(Item item) {
 		try 
 		{
 			PreparedStatement s = conn.prepareStatement(
@@ -64,31 +65,43 @@ public class ComDb extends DbConnection
 			s.setString(4, item.getTitle());
 			s.setString(5, item.getCommunicationType().toString());
 			s.execute();
+			
+			return getSequenceValue("items_id_seq"); 
 		}
 		catch(SQLException e) 
 		{
 			e.printStackTrace();
-			return false;
+			return -1;
 		}
-		return true;
 	}
 	
-	public boolean insertPerson(Person person) {
+	public int insertPerson(Person person) {
 		try 
 		{
-			PreparedStatement s = conn.prepareStatement(
-					"INSERT INTO people (p_id, name, email) VALUES " +
-					"(default, ?, ?)");
-			s.setString(1, person.getName());
-			s.setString(2, person.getEmail());
-			s.execute();
+			String sql = "SELECT * FROM people WHERE " +
+					"name=? AND email=?"; 
+			String[] parms = {person.getName(), person.getEmail()};
+			ResultSet rs = execPreparedQuery(sql, parms);
+			if(!rs.next()) {
+				// Insert
+				PreparedStatement s = conn.prepareStatement(
+						"INSERT INTO people (p_id, name, email) VALUES " +
+						"(default, ?, ?)");
+				s.setString(1, person.getName());
+				s.setString(2, person.getEmail());
+				s.execute();
+
+				return getSequenceValue("people_id_seq");
+			}
+			else {
+				return rs.getInt("p_id");
+			}
 		}
 		catch(SQLException e) 
 		{
 			e.printStackTrace();
-			return false;
+			return -1;
 		}
-		return true;
 	}
 	
 	public int insertThreadUnknownThread(models.Thread thread) {
@@ -101,14 +114,7 @@ public class ComDb extends DbConnection
 			s.setString(1, Integer.toString(thread.getItemID()));
 			s.execute();
 			
-			// Get generated thread ID
-			String sql = "SELECT thread_id FROM threads WHERE " +
-					"item_id=?"; 
-			String[] parms = {Integer.toString(thread.getItemID())};
-			ResultSet rs = execPreparedQuery(sql, parms);
-			if(rs.next())
-				return rs.getInt("thread_id");
-			return -1;
+			return getSequenceValue("threads_id_seq");
 		}
 		catch(SQLException e) 
 		{
@@ -192,6 +198,24 @@ public class ComDb extends DbConnection
 		{
 			e.printStackTrace();
 			return null;
+		}
+	}
+	
+	private int getSequenceValue(String sequence) {
+		try 
+		{
+			// Get the ID
+			String sql = "SELECT currval(?)"; 
+			String[] parms = {sequence};
+			ResultSet rs = execPreparedQuery(sql, parms);
+			if(rs.next())
+				return rs.getInt("currval");
+			return -1;
+		}
+		catch(SQLException e) 
+		{
+			e.printStackTrace();
+			return -1;
 		}
 	}
 }

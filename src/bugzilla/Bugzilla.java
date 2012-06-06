@@ -1,15 +1,67 @@
 package bugzilla;
 
+import java.util.List;
+
+import models.BugzillaTO;
+import models.Item;
+import models.Person;
+
+import com.ComResources;
+import com.ComResources.CommType;
+
 import db.ComDb;
 
 public class Bugzilla
 {
 	private ComDb comDB;
+	private BugzillaDb bugzillaDB;
 
-	public Bugzilla()
+	public Bugzilla(ComDb comDB, String dbName)
 	{
-		super();
+		this.comDB = comDB;
+		
+		this.bugzillaDB = new BugzillaDb();
+		bugzillaDB.connect(dbName);
 	}
 	
-	
+	public void parseBugzilla() {
+		int currentBug = -1;
+		int currentThread = -1;
+		int offset = 0;
+		
+		List<BugzillaTO> bugs = bugzillaDB.getItemsFromBugzilla(ComResources.DB_LIMIT, offset);
+		
+		for(;;) {
+			for(BugzillaTO bug: bugs) {
+				if(currentBug != bug.getBug_id()) {
+					currentBug = bug.getBug_id();
+					currentThread = -1;
+				}
+				
+				// Insert the person
+				int pID = comDB.insertPerson(new Person(-1, bug.getWho_name(), bug.getWho()));
+				
+				// Insert the item
+				int itemID = comDB.insertItem(new Item(pID, bug.getBug_when(), -1, bug.getThetext(), 
+						"Title", CommType.BUGZILLA));
+				
+				// Insert the thread
+				if(currentThread == -1) {
+					currentThread = comDB.insertThreadUnknownThread(new models.Thread(itemID, -1));
+				}
+				else {
+					comDB.insertThreadKnownThread(new models.Thread(itemID, currentThread));
+				}
+				
+			}
+			
+			if(bugs.size() < ComResources.DB_LIMIT)
+				break;
+			else {
+				offset += ComResources.DB_LIMIT;
+				bugs = bugzillaDB.getItemsFromBugzilla(ComResources.DB_LIMIT, offset);
+			}
+		}
+		
+	}
 }
