@@ -57,7 +57,7 @@ CREATE SEQUENCE threads_id_seq
 	CACHE 1;
 
 CREATE TABLE threads (
-	item_id integer NOT NULL references items(item_id) ON DELETE CASCADE,
+	item_id integer NOT NULL references items(item_id) ON DELETE CASCADE PRIMARY KEY,
 	thread_id integer NOT NULL DEFAULT NEXTVAL('threads_id_seq'::regclass)
 );
 
