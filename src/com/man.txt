@@ -1,0 +1,22 @@
+NAME
+	com2pgsql
+	
+SYNOPSIS
+	com2pgsql [OPTION]... <DATABASE NAME>
+	
+DESCRIPTION
+	Create a PostgreSQL database which contains information regarding aspects of social connectivity over
+	a technical project.
+	
+	A DATABASE NAME argument that already exists will remove the existing database and create a new empty database.
+	
+	A DATABASE NAME argument that does not exist will create a new empty database.
+	
+	-B SERVER NAME
+		insert Bugzilla communication information from database NAME on server SERVER
+		
+AUTHOR
+	Written by Jordan Ell, Triet Huynh, and Braden Simpson.
+	
+SEE ALSO
+	The full documentation for com2pgsql is maintained at https://github.com/eggnet/com2pgsql/wiki

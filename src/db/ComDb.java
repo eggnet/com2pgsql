@@ -4,7 +4,12 @@ import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
+import com.ComResources.CommType;
+
+import models.Change;
 import models.Item;
 import models.Link;
 import models.Person;
@@ -165,5 +170,28 @@ public class ComDb extends DbConnection
 			return false;
 		}
 		return true;
+	}
+	
+	public List<Item> getItemsInThread(int ThreadID) {
+		try 
+		{
+			LinkedList<Item> items = new LinkedList<Item>();
+			String sql = "SELECT p_id, item_date, item_id, body, title, type" +
+					" FROM threads NATURAL JOIN items" +
+					" WHERE thread_id=?"; 
+			String[] parms = {Integer.toString(ThreadID)};
+			ResultSet rs = execPreparedQuery(sql, parms);
+			while(rs.next())
+			{
+				items.add(new Item(rs.getInt("p_id"), rs.getTimestamp("item_date"), rs.getInt("item_id"), 
+						rs.getString("body"), rs.getString("title"), CommType.valueOf(rs.getString("type"))));
+			}
+			return items;
+		}
+		catch(SQLException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
 }
