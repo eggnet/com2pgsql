@@ -16,9 +16,9 @@ import com.ComResources.CommType;
  */
 public class Item
 {
-	private int PId;
+	private int PID;
 	private Timestamp Timestamp;
-	private int ItemId;
+	private int ItemID;
 	private String Body;
 	private String Title;
 	private CommType CommunicationType;
@@ -34,9 +34,9 @@ public class Item
 	public Item(int pId, Timestamp timestamp, int itemId, String body, String title, CommType communicationType)
 	{
 		super();
-		PId = pId;
+		PID = pId;
 		Timestamp = timestamp;
-		ItemId = itemId;
+		ItemID = itemId;
 		Body = body;
 		Title = title;
 		CommunicationType = communicationType;
@@ -44,11 +44,11 @@ public class Item
 	
 	public int getPId()
 	{
-		return PId;
+		return PID;
 	}
 	public void setPId(int pId)
 	{
-		PId = pId;
+		PID = pId;
 	}
 	public Timestamp getTimestamp()
 	{
@@ -60,11 +60,11 @@ public class Item
 	}
 	public int getItemId()
 	{
-		return ItemId;
+		return ItemID;
 	}
 	public void setItemId(int itemId)
 	{
-		ItemId = itemId;
+		ItemID = itemId;
 	}
 	public String getBody()
 	{
