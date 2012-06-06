@@ -17,7 +17,7 @@ import com.ComResources.CommType;
 public class Item
 {
 	private int PID;
-	private Timestamp Timestamp;
+	private Timestamp ItemDate;
 	private int ItemID;
 	private String Body;
 	private String Title;
@@ -35,7 +35,7 @@ public class Item
 	{
 		super();
 		PID = pId;
-		Timestamp = timestamp;
+		ItemDate = timestamp;
 		ItemID = itemId;
 		Body = body;
 		Title = title;
@@ -50,13 +50,13 @@ public class Item
 	{
 		PID = pId;
 	}
-	public Timestamp getTimestamp()
+	public Timestamp getItemDate()
 	{
-		return Timestamp;
+		return ItemDate;
 	}
-	public void setTimestamp(Timestamp timestamp)
+	public void setItemDate(Timestamp timestamp)
 	{
-		Timestamp = timestamp;
+		ItemDate = timestamp;
 	}
 	public int getItemId()
 	{
