@@ -20,8 +20,8 @@ CREATE SEQUENCE people_id_seq
 
 CREATE TABLE people ( 
 	p_id integer NOT NULL PRIMARY KEY DEFAULT NEXTVAL('people_id_seq'::regclass),
-	name varchar(255),
-	email varchar(255)
+	name varchar(255) NOT NULL,
+	email varchar(255) NOT NULL
 );
 
 
@@ -37,11 +37,11 @@ CREATE SEQUENCE items_id_seq
 
 CREATE TABLE items (
 	p_id integer NOT NULL references people(p_id) ON DELETE CASCADE,
-	item_date timestamp,
+	item_date timestamp with time zone not null,
 	item_id integer NOT NULL PRIMARY KEY DEFAULT NEXTVAL('items_id_seq'::regclass),
 	body text,
 	title text,
-	type varchar(255)
+	type varchar(255) NOT NULL
 );
 
 
