@@ -2,7 +2,6 @@ package com;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -16,6 +15,8 @@ import db.ComDb;
 public class Main
 {
 	public static ComDb db;
+	
+	@SuppressWarnings("static-access")
 	public static void main(String[] args)
 	{
 		System.out.println("Com2Pgsql tool developed by eggnet at UVic.");
