@@ -9,6 +9,7 @@ public class BugzillaTO
 	private String		who_name;
 	private Timestamp 	bug_when;
 	private String		thetext;
+	private String		title;
 	
 	public BugzillaTO()
 	{
@@ -16,7 +17,7 @@ public class BugzillaTO
 	}
 
 	public BugzillaTO(int bug_id, String who, String who_name,
-			Timestamp bug_when, String thetext)
+			Timestamp bug_when, String thetext, String title)
 	{
 		super();
 		this.bug_id = bug_id;
@@ -24,7 +25,10 @@ public class BugzillaTO
 		this.who_name = who_name;
 		this.bug_when = bug_when;
 		this.thetext = thetext;
+		this.title = title;
 	}
+
+
 
 	public int getBug_id()
 	{
@@ -74,5 +78,15 @@ public class BugzillaTO
 	public void setThetext(String thetext)
 	{
 		this.thetext = thetext;
+	}
+
+	public String getTitle()
+	{
+		return title;
+	}
+
+	public void setTitle(String title)
+	{
+		this.title = title;
 	}
 }

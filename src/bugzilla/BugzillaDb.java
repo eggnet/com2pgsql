@@ -22,14 +22,15 @@ public class BugzillaDb extends DbConnection
 		try 
 		{
 			LinkedList<BugzillaTO> bugs = new LinkedList<BugzillaTO>();
-			String sql = "SELECT * FROM bugzilla_longdescs " +
+			String sql = "SELECT * FROM bugzilla_longdescs JOIN bugzilla_bugs ON " +
+					"bugzilla_longdescs.bug_id = bugzilla_bugs.bug_id " +
 					"LIMIT ? OFFSET ?"; 
 			String[] parms = {Integer.toString(bLIMIT), Integer.toString(bOFFSET)};
 			ResultSet rs = execPreparedQuery(sql, parms);
 			while(rs.next())
 			{
 				bugs.add(new BugzillaTO(rs.getInt("bug_id"), rs.getString("who"), rs.getString("who_name"),
-						rs.getTimestamp("bug_when"), rs.getString("thetext")));
+						rs.getTimestamp("bug_when"), rs.getString("thetext"), rs.getString("short_desc")));
 			}
 			return bugs;
 		}

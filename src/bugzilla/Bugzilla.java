@@ -43,7 +43,7 @@ public class Bugzilla
 				
 				// Insert the item
 				int itemID = comDB.insertItem(new Item(pID, bug.getBug_when(), -1, bug.getThetext(), 
-						"Title", CommType.BUGZILLA));
+						bug.getTitle(), CommType.BUGZILLA));
 				
 				// Insert the thread
 				if(currentThread == -1) {
@@ -62,6 +62,5 @@ public class Bugzilla
 				bugs = bugzillaDB.getItemsFromBugzilla(ComResources.DB_LIMIT, offset);
 			}
 		}
-		
 	}
 }
