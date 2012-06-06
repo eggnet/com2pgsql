@@ -1,5 +1,6 @@
 package db;
 
+import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,6 +15,36 @@ public class ComDb extends DbConnection
 {
 	public ComDb() {
 		super();
+	}
+	
+	/**
+	 * Creates a db on the current connection.
+	 * @param dbName
+	 * @return true for success
+	 */
+	public boolean createDb(String dbName) {
+		PreparedStatement s;
+		try {
+			// Drop the DB if it already exists
+			s = conn.prepareStatement("DROP DATABASE IF EXISTS " + dbName + ";");
+			s.execute();
+			
+			// First create the DB.
+			s = conn.prepareStatement("CREATE DATABASE " + dbName + ";");
+			s.execute();
+			
+			// Reconnect to our new database.
+			connect(dbName.toLowerCase());
+			
+			// Now load our default schema in.
+			sr.runScript(new InputStreamReader(this.getClass().getResourceAsStream("createdb.sql")));
+			return true;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	public boolean insertItem(Item item) {
