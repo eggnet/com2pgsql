@@ -59,12 +59,11 @@ public class ComDb extends DbConnection
 		{
 			PreparedStatement s = conn.prepareStatement(
 					"INSERT INTO items (p_id, item_date, item_id, body, title, type) VALUES " +
-					"(?, ?, default, ?, ?, ?)");
-			s.setString(1, Integer.toString(item.getPId()));
-			s.setString(2, item.getItemDate().toString());
-			s.setString(3, item.getBody());
-			s.setString(4, item.getTitle());
-			s.setString(5, item.getCommunicationType().toString());
+					"(" + item.getPId() + ", ?::timestamp, default, ?, ?, ?)");
+			s.setString(1, item.getItemDate().toString());
+			s.setString(2, "");
+			s.setString(3, "");
+			s.setString(4, item.getCommunicationType().toString());
 			s.execute();
 			
 			return getSequenceValue("items_id_seq"); 
@@ -111,8 +110,7 @@ public class ComDb extends DbConnection
 			// Insert
 			PreparedStatement s = conn.prepareStatement(
 					"INSERT INTO threads (item_id, thread_id) VALUES " +
-					"(? default)");
-			s.setString(1, Integer.toString(thread.getItemID()));
+					"(" + thread.getItemID() + ", default)");
 			s.execute();
 			
 			return getSequenceValue("threads_id_seq");
@@ -129,9 +127,7 @@ public class ComDb extends DbConnection
 		{
 			PreparedStatement s = conn.prepareStatement(
 					"INSERT INTO threads (item_id, thread_id) VALUES " +
-					"(? ?)");
-			s.setString(1, Integer.toString(thread.getItemID()));
-			s.setString(2, Integer.toString(thread.getThreadID()));
+					"(" + thread.getItemID() + ", " + thread.getThreadID() + ")");
 			s.execute();
 		}
 		catch(SQLException e) 
@@ -147,9 +143,7 @@ public class ComDb extends DbConnection
 		{
 			PreparedStatement s = conn.prepareStatement(
 					"INSERT INTO replies (from_item_id, to_item_id) VALUES " +
-					"(?, ?)");
-			s.setString(1, Integer.toString(reply.getFromItemID()));
-			s.setString(2, Integer.toString(reply.getToItemID()));
+					"(" + reply.getFromItemID() + ", " + reply.getToItemID() + ")");
 			s.execute();
 		}
 		catch(SQLException e) 
@@ -165,10 +159,8 @@ public class ComDb extends DbConnection
 		{
 			PreparedStatement s = conn.prepareStatement(
 					"INSERT INTO replies (item_id, commit_id, confidence) VALUES " +
-					"(?, ?, ?)");
-			s.setString(1, Integer.toString(link.getItemID()));
+					"(" + link.getItemID() + ", ?, " + link.getConfidence() + ")");
 			s.setString(2, link.getCommitID());
-			s.setString(1, Float.toString(link.getConfidence()));
 			s.execute();
 		}
 		catch(SQLException e) 

@@ -1,5 +1,6 @@
 package bugzilla.models.TO;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 public class BugzillaCommentTO
