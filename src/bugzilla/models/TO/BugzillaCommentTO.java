@@ -1,8 +1,8 @@
-package models;
+package bugzilla.models.TO;
 
 import java.sql.Timestamp;
 
-public class BugzillaTO
+public class BugzillaCommentTO
 {
 	private int			bug_id;
 	private String		who;
@@ -11,12 +11,12 @@ public class BugzillaTO
 	private String		thetext;
 	private String		title;
 	
-	public BugzillaTO()
+	public BugzillaCommentTO()
 	{
 		super();
 	}
 
-	public BugzillaTO(int bug_id, String who, String who_name,
+	public BugzillaCommentTO(int bug_id, String who, String who_name,
 			Timestamp bug_when, String thetext, String title)
 	{
 		super();

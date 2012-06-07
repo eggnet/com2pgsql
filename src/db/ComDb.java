@@ -7,9 +7,10 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import bugzilla.models.TO.BugzillaCommentTO;
+
 import com.ComResources.CommType;
 
-import models.BugzillaTO;
 import models.Change;
 import models.Item;
 import models.Link;

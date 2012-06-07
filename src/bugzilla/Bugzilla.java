@@ -4,11 +4,11 @@ import http.HTTPRequester;
 
 import java.util.List;
 
-import models.BugzillaTO;
 import models.Item;
 import models.Person;
 
 import bugzilla.models.Bug;
+import bugzilla.models.TO.BugzillaCommentTO;
 
 import com.ComResources;
 import com.ComResources.CommType;
@@ -48,10 +48,10 @@ public class Bugzilla
 		int currentThread = -1;
 		int offset = 0;
 		
-		List<BugzillaTO> bugs = bugzillaDB.getItemsFromBugzilla(ComResources.DB_LIMIT, offset);
+		List<BugzillaCommentTO> bugs = bugzillaDB.getItems(ComResources.DB_LIMIT, offset);
 		
 		for(;;) {
-			for(BugzillaTO bug: bugs) {
+			for(BugzillaCommentTO bug: bugs) {
 				if(currentBug != bug.getBug_id()) {
 					currentBug = bug.getBug_id();
 					currentThread = -1;
@@ -78,7 +78,7 @@ public class Bugzilla
 				break;
 			else {
 				offset += ComResources.DB_LIMIT;
-				bugs = bugzillaDB.getItemsFromBugzilla(ComResources.DB_LIMIT, offset);
+				bugs = bugzillaDB.getItems(ComResources.DB_LIMIT, offset);
 			}
 		}
 	}
