@@ -9,7 +9,7 @@ import java.util.List;
 
 import bugzilla.models.TO.BugzillaCommentTO;
 
-import com.ComResources.CommType;
+import comm.ComResources.CommType;
 
 import models.Change;
 import models.Item;

@@ -11,7 +11,7 @@ import bugzilla.models.TO.BugzillaBugTO;
 import bugzilla.models.TO.BugzillaCCTO;
 import bugzilla.models.TO.BugzillaCommentTO;
 
-import com.ComResources.CommType;
+import comm.ComResources.CommType;
 
 import db.DbConnection;
 

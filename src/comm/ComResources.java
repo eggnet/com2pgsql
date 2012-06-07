@@ -1,4 +1,4 @@
-package com;
+package comm;
 
 import db.Resources;
 

@@ -10,10 +10,10 @@ import models.Person;
 import bugzilla.models.Bug;
 import bugzilla.models.TO.BugzillaCommentTO;
 
-import com.ComResources;
-import com.ComResources.CommType;
 
 import com.google.gson.*;
+import comm.ComResources;
+import comm.ComResources.CommType;
 
 import db.ComDb;
 
