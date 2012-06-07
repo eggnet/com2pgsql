@@ -10,6 +10,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
+import bugzilla.Bugzilla;
+
 import db.ComDb;
 
 public class Main
@@ -74,7 +76,8 @@ public class Main
 				    	return;
 				    }
 				    else {
-				    	
+				    	Bugzilla bugz = new Bugzilla(db, line.getOptionValue("b"));
+				    	bugz.parseBugzilla();
 				    }
 				}
 				

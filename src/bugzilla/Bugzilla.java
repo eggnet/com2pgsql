@@ -1,13 +1,19 @@
 package bugzilla;
 
+import http.HTTPRequester;
+
 import java.util.List;
 
 import models.BugzillaTO;
 import models.Item;
 import models.Person;
 
+import bugzilla.models.Bug;
+
 import com.ComResources;
 import com.ComResources.CommType;
+
+import com.google.gson.*;
 
 import db.ComDb;
 
@@ -16,12 +22,25 @@ public class Bugzilla
 	private ComDb comDB;
 	private BugzillaDb bugzillaDB;
 
+	public Bugzilla(ComDb comDB) {
+		this.comDB = comDB;
+	}
+	
 	public Bugzilla(ComDb comDB, String dbName)
 	{
 		this.comDB = comDB;
 		
 		this.bugzillaDB = new BugzillaDb();
 		bugzillaDB.connect(dbName);
+	}
+	
+	public void parseBugzillaFromHTTP(String http) {
+		System.out.println("Retrieving Bugzilla information from: " + http);
+		
+		String bugJSON = HTTPRequester.sendGetRequest(http, "bug/35");
+		
+		Gson gson = new Gson();
+		Bug bug = gson.fromJson(bugJSON, Bug.class);
 	}
 	
 	public void parseBugzilla() {
