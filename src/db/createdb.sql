@@ -63,11 +63,40 @@ CREATE TABLE threads (
 
 ALTER SEQUENCE threads_id_seq OWNED BY threads.thread_id;
 
+--///////////////// SILENTS TABLE /////////////////-- 
+
+CREATE TABLE silents (
+	item_id integer NOT NULL references items(item_id),
+	p_id integer NOT NULL references people(p_id)
+);
+
 --///////////////// REPLIES TABLE /////////////////-- 
 
 CREATE TABLE replies (
 	from_item_id integer NOT NULL references items(item_id) ON DELETE CASCADE,
 	to_item_id integer NOT NULL references items(item_id) ON DELETE CASCADE
+);
+
+--///////////////// ISSUES TABLE /////////////////-- 
+
+CREATE TABLE issues (
+	item_id integer NOT NULL references items(item_id),
+	status varchar(255),
+	assignee_id integer NOT NULL references people(p_id),
+	creation_ts timestamp with time zone,
+	last_modified_ts timestamp with time zone,
+	title varchar(512),
+	description text,
+	creator_id integer NOT NULL references people(p_id),
+	keywords varchar(512)
+);
+
+--///////////////// ATTACHMENTS TABLE /////////////////-- 
+
+CREATE TABLE attachments (
+	item_id integer NOT NULL references items(item_id),
+	title varchar(512),
+	body text
 );
 
 --///////////////// LINKS TABLE /////////////////-- 
