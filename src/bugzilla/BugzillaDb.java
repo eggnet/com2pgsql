@@ -8,7 +8,7 @@ import java.util.List;
 import models.BugzillaTO;
 import models.Item;
 
-import com.ComResources.CommType;
+import comm.ComResources.CommType;
 
 import db.DbConnection;
 

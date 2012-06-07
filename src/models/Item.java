@@ -2,7 +2,7 @@ package models;
 
 import java.sql.Timestamp;
 
-import com.ComResources.CommType;
+import comm.ComResources.CommType;
 
 /**
  * Stores the record of an Item of communication

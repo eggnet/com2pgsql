@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.ComResources.CommType;
+import comm.ComResources.CommType;
 
 import models.BugzillaTO;
 import models.Change;

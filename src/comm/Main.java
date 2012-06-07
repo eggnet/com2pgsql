@@ -1,4 +1,4 @@
-package com;
+package comm;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,6 +15,7 @@ import org.apache.commons.cli.Options;
 import bugzilla.Bugzilla;
 
 import db.ComDb;
+import db.Resources;
 
 public class Main
 {
@@ -70,7 +71,7 @@ public class Main
 				    	// Create the DB
 				    	System.out.println("Creating database");
 						db = new ComDb();
-						db.connect("");
+						db.connect(Resources.EGGNET_DB_NAME);
 						db.createDb(line.getOptionValue("d"));
 				    }
 				}
