@@ -7,10 +7,6 @@ import java.util.List;
 import models.Item;
 import models.Person;
 
-import bugzilla.models.Bug;
-import bugzilla.models.TO.BugzillaCommentTO;
-
-
 import com.google.gson.*;
 import comm.ComResources;
 import comm.ComResources.CommType;
@@ -40,7 +36,6 @@ public class Bugzilla
 		String bugJSON = HTTPRequester.sendGetRequest(http, "bug/35");
 		
 		Gson gson = new Gson();
-		Bug bug = gson.fromJson(bugJSON, Bug.class);
 	}
 	
 	public void parseBugzilla() {
@@ -48,6 +43,7 @@ public class Bugzilla
 		int currentThread = -1;
 		int offset = 0;
 		
+		/*
 		List<BugzillaCommentTO> bugs = bugzillaDB.getItems(ComResources.DB_LIMIT, offset);
 		
 		for(;;) {
@@ -80,6 +76,6 @@ public class Bugzilla
 				offset += ComResources.DB_LIMIT;
 				bugs = bugzillaDB.getItems(ComResources.DB_LIMIT, offset);
 			}
-		}
+		}*/
 	}
 }
