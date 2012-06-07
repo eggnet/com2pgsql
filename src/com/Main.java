@@ -3,6 +3,8 @@ package com;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
+import jira.Jira;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -17,6 +19,7 @@ import db.ComDb;
 public class Main
 {
 	public static ComDb db;
+	public static Jira jira;
 	
 	@SuppressWarnings("static-access")
 	public static void main(String[] args)
@@ -44,9 +47,14 @@ public class Main
 											   .hasArg()
 											   .create("e");
 				
+				Option jiraOpt 	= OptionBuilder.withArgName("j")
+											   .hasArg()
+											   .create("j");
+				
 				options.addOption(bugzilla);
 				options.addOption(database);
 				options.addOption(email);
+				options.addOption(jiraOpt);
 				
 				CommandLine line = parser.parse(options, args);
 				
@@ -54,7 +62,7 @@ public class Main
 				if(line.hasOption("d")) {
 				    String[] values = line.getOptionValues("d");
 				    if(values.length != 1) {
-				    	System.out.println("d flag used incorrectly.");
+				    	System.out.println("-d flag used incorrectly.");
 				    	printMan();
 				    	return;
 				    }
@@ -71,7 +79,7 @@ public class Main
 				if(line.hasOption("b")) {
 				    String[] values = line.getOptionValues("b");
 				    if(values.length != 1) {
-				    	System.out.println("b flag used incorrectly.");
+				    	System.out.println("-b flag used incorrectly.");
 				    	printMan();
 				    	return;
 				    }
@@ -85,7 +93,7 @@ public class Main
 				if(line.hasOption("e")) {
 				    String[] values = line.getOptionValues("e");
 				    if(values.length != 1) {
-				    	System.out.println("e flag used incorrectly.");
+				    	System.out.println("-e flag used incorrectly.");
 				    	printMan();
 				    	return;
 				    }
@@ -94,6 +102,20 @@ public class Main
 				    }
 				}
 				
+				// Check for jira
+				if (line.hasOption("j")) {
+					String[] values = line.getOptionValues("j");
+					if (values.length != 1) {
+						System.out.println("-j flag used incorrectly");
+						printMan();
+						return;
+					}
+					else {
+						System.out.println("Running Jira parser on " + line.getOptionValue("j"));
+						jira = new Jira();
+						jira.parseJira(line.getOptionValue("j"));
+					}
+				}
 			}
 		}
 		catch (Exception e)
