@@ -62,8 +62,8 @@ public class ComDb extends DbConnection
 					"INSERT INTO items (p_id, item_date, item_id, body, title, type) VALUES " +
 					"(" + item.getPId() + ", ?::timestamp, default, ?, ?, ?)");
 			s.setString(1, item.getItemDate().toString());
-			s.setString(2, "");
-			s.setString(3, "");
+			s.setString(2, item.getBody());
+			s.setString(3, item.getTitle());
 			s.setString(4, item.getCommunicationType().toString());
 			s.execute();
 			
