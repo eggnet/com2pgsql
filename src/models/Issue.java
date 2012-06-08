@@ -7,12 +7,15 @@ public class Issue
 	private int itemID;
 	private String status;
 	private int assignedID;
+	private String assignee;
 	private Timestamp creationTS;
 	private Timestamp lastModifiedTS;
 	private String title;
 	private String description;
 	private int creatorID;
+	private String creator;
 	private String keywords;
+	private String issueNum;
 	
 	public Issue()
 	{
@@ -21,7 +24,7 @@ public class Issue
 
 	public Issue(int itemID, String status, int assignedID,
 			Timestamp creationTS, Timestamp lastModifiedTS, String title,
-			String description, int creatorID, String keywords)
+			String description, int creatorID, String keywords, String issueNum)
 	{
 		super();
 		this.itemID = itemID;
@@ -33,6 +36,26 @@ public class Issue
 		this.description = description;
 		this.creatorID = creatorID;
 		this.keywords = keywords;
+		this.issueNum = issueNum;
+	}
+	
+	
+
+	public Issue(int itemID, String status, String assignee,
+			Timestamp creationTS, Timestamp lastModifiedTS, String title,
+			String description, String creator, String keywords, String issueNum)
+	{
+		super();
+		this.itemID = itemID;
+		this.status = status;
+		this.assignee = assignee;
+		this.creationTS = creationTS;
+		this.lastModifiedTS = lastModifiedTS;
+		this.title = title;
+		this.description = description;
+		this.creator = creator;
+		this.keywords = keywords;
+		this.issueNum = issueNum;
 	}
 
 	public int getItemID()
@@ -123,5 +146,35 @@ public class Issue
 	public void setKeywords(String keywords)
 	{
 		this.keywords = keywords;
+	}
+
+	public String getIssueNum()
+	{
+		return issueNum;
+	}
+
+	public void setIssueNum(String issueNum)
+	{
+		this.issueNum = issueNum;
+	}
+
+	public String getAssignee()
+	{
+		return assignee;
+	}
+
+	public void setAssignee(String assignee)
+	{
+		this.assignee = assignee;
+	}
+
+	public String getCreator()
+	{
+		return creator;
+	}
+
+	public void setCreator(String creator)
+	{
+		this.creator = creator;
 	}
 }

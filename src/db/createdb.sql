@@ -88,7 +88,8 @@ CREATE TABLE issues (
 	title varchar(512),
 	description text,
 	creator_id integer NOT NULL references people(p_id),
-	keywords varchar(512)
+	keywords varchar(512),
+	issue_num varchar(64)
 );
 
 --///////////////// ATTACHMENTS TABLE /////////////////-- 

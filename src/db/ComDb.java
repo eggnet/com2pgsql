@@ -4,17 +4,20 @@ import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import comm.ComResources.CommType;
 
 import models.Change;
+import models.Issue;
 import models.Item;
 import models.Link;
 import models.Person;
 import models.Item;
 import models.Reply;
+import models.Silent;
 
 public class ComDb extends DbConnection
 {
@@ -102,6 +105,14 @@ public class ComDb extends DbConnection
 		}
 	}
 	
+	public List<Integer> insertPeople(List<Person> people) {
+		List<Integer> inserts = new ArrayList<Integer>();
+		for(Person person: people) {
+			inserts.add(insertPerson(person));
+		}
+		return inserts;
+	}
+	
 	public int insertThreadUnknownThread(models.Thread thread) {
 		try 
 		{
@@ -159,6 +170,47 @@ public class ComDb extends DbConnection
 					"INSERT INTO replies (item_id, commit_id, confidence) VALUES " +
 					"(" + link.getItemID() + ", ?, " + link.getConfidence() + ")");
 			s.setString(2, link.getCommitID());
+			s.execute();
+		}
+		catch(SQLException e) 
+		{
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean insertIssue(Issue issue) {
+		try 
+		{
+			PreparedStatement s = conn.prepareStatement(
+					"INSERT INTO issues (item_id, status, assignee_id, creation_ts, last_modified_ts, " +
+					"title, description, creator_id, keywords, issue_num) VALUES " +
+					"(" + issue.getItemID() + ", ?, " + issue.getAssignedID() + ", ?::timestamp, ?::timestamp, ?, ?, " +
+					issue.getCreatorID() + ", ?, ?)");
+			s.setString(1, issue.getStatus());
+			s.setString(2, issue.getCreationTS().toString());
+			s.setString(3, issue.getLastModifiedTS().toString());
+			s.setString(4, issue.getTitle());
+			s.setString(5, issue.getDescription());
+			s.setString(6, issue.getKeywords());
+			s.setString(7, issue.getIssueNum());
+			s.execute();
+		}
+		catch(SQLException e) 
+		{
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean insertSilent(Silent silent) {
+		try 
+		{
+			PreparedStatement s = conn.prepareStatement(
+					"INSERT INTO silents (p_id, item_id) VALUES " +
+					"(" + silent.getpID() + ", " + silent.getItemID() + ")");
 			s.execute();
 		}
 		catch(SQLException e) 
