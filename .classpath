@@ -19,5 +19,6 @@
 	<classpathentry kind="lib" path="libs/joda-time-2.1.jar"/>
 	<classpathentry kind="lib" path="libs/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="libs/jira-rest-java-client-0.6-m4-sources.jar"/>
+	<classpathentry kind="lib" path="libs/jazzy.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
