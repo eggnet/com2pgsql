@@ -1,5 +1,6 @@
 package models;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 import comm.ComResources.CommType;
@@ -17,6 +18,7 @@ import comm.ComResources.CommType;
 public class Item
 {
 	private int PID;
+	private String person;
 	private Timestamp ItemDate;
 	private int ItemID;
 	private String Body;
@@ -42,6 +44,18 @@ public class Item
 		CommunicationType = communicationType;
 	}
 	
+	public Item(String person, Timestamp itemDate, int itemID, String body,
+			String title, CommType communicationType)
+	{
+		super();
+		this.person = person;
+		ItemDate = itemDate;
+		ItemID = itemID;
+		Body = body;
+		Title = title;
+		CommunicationType = communicationType;
+	}
+
 	public int getPId()
 	{
 		return PID;
@@ -90,4 +104,16 @@ public class Item
 	{
 		CommunicationType = communicationType;
 	}
+
+	public String getPerson()
+	{
+		return person;
+	}
+
+	public void setPerson(String person)
+	{
+		this.person = person;
+	}
+	
+	
 }
