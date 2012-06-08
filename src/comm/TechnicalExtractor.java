@@ -85,6 +85,12 @@ public class TechnicalExtractor //implements SpellCheckListener
 	}
 	
 	private boolean checkSpecialCharacters(String token) {
-		return false;
+		int count = 0;
+		for (int i=0; i<  token.length(); i++) {
+            char ch = token.charAt(i);
+            if (!Character.isLetterOrDigit(ch))
+                count++;
+        }
+		return count > 2;
 	}
 }
