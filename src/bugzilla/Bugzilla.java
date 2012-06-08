@@ -4,6 +4,7 @@ import http.HTTPRequester;
 
 import java.util.List;
 
+import models.Attachment;
 import models.Issue;
 import models.Item;
 import models.Person;
@@ -73,6 +74,12 @@ public class Bugzilla
 				for(Person cc: CCs) {
 					int ccID = comDB.insertPerson(cc);
 					comDB.insertSilent(new Silent(ccID, itemID));
+				}
+				
+				// Insert the attachments
+				List<Attachment> attachments = bugzillaDB.getAttachmentsForIssue(issue);
+				for(Attachment attachment: attachments) {
+					comDB.insertAttachment(attachment);
 				}
 				
 				// Insert the comment items

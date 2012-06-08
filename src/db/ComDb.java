@@ -12,6 +12,7 @@ import java.util.List;
 
 import comm.ComResources.CommType;
 
+import models.Attachment;
 import models.Change;
 import models.Issue;
 import models.Item;
@@ -51,7 +52,7 @@ public class ComDb extends DbConnection
 			connect(dbName.toLowerCase());
 			
 			// Now load our default schema in.
-			sr.runScript(new BufferedReader(new FileReader("createdb.sql")));
+			sr.runScript(new BufferedReader(new FileReader("src/db/createdb.sql")));
 			return true;
 		}
 		catch (Exception e)
@@ -68,8 +69,8 @@ public class ComDb extends DbConnection
 					"INSERT INTO items (p_id, item_date, item_id, body, title, type) VALUES " +
 					"(" + item.getPId() + ", ?::timestamp, default, ?, ?, ?)");
 			s.setString(1, item.getItemDate().toString());
-			s.setString(2, "");
-			s.setString(3, "");
+			s.setString(2, item.getBody());
+			s.setString(3, item.getTitle());
 			s.setString(4, item.getCommunicationType().toString());
 			s.execute();
 			
@@ -217,6 +218,24 @@ public class ComDb extends DbConnection
 			PreparedStatement s = conn.prepareStatement(
 					"INSERT INTO silents (p_id, item_id) VALUES " +
 					"(" + silent.getpID() + ", " + silent.getItemID() + ")");
+			s.execute();
+		}
+		catch(SQLException e) 
+		{
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean insertAttachment(Attachment attachment) {
+		try 
+		{
+			PreparedStatement s = conn.prepareStatement(
+					"INSERT INTO attachments (item_id, title, body) VALUES " +
+					"(" + attachment.getItemID() + ", ?, ?)");
+			s.setString(1, attachment.getTitle());
+			s.setString(2, attachment.getBody());
 			s.execute();
 		}
 		catch(SQLException e) 

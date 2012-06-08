@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import models.Attachment;
 import models.Issue;
 import models.Item;
 import models.Person;
@@ -79,6 +80,27 @@ public class BugzillaDb extends DbConnection
 						-1, rs.getString("thetext"), issue.getTitle(), ComResources.CommType.BUGZILLA));
 			}
 			return items;
+		}
+		catch(SQLException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public List<Attachment> getAttachmentsForIssue(Issue issue) {
+		try 
+		{
+			LinkedList<Attachment> attachments = new LinkedList<Attachment>();
+			String sql = "SELECT * FROM bugzilla_attachments " +
+					"WHERE bug_id=" + issue.getIssueNum();
+			String[] parms = {};
+			ResultSet rs = execPreparedQuery(sql, parms);
+			while(rs.next())
+			{
+				attachments.add(new Attachment(issue.getItemID(), rs.getString("filename"), rs.getString("thedata")));
+			}
+			return attachments;
 		}
 		catch(SQLException e) 
 		{
