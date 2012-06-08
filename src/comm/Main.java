@@ -128,7 +128,7 @@ public class Main
 	private static void printMan() {
 		try {
 			// Print the man page
-			BufferedReader in = new BufferedReader(new FileReader("src/com/man.txt")); 
+			BufferedReader in = new BufferedReader(new FileReader("src/comm/man.txt")); 
 			String line;
 			while ((line = in.readLine()) != null) {
 				System.out.println(line);          
