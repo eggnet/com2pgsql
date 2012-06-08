@@ -114,7 +114,7 @@ public class Main
 					else {
 						System.out.println("Running Jira parser on " + line.getOptionValue("j"));
 						jira = new Jira();
-						jira.parseJira(line.getOptionValue("j"));
+						jira.parseJira(line.getOptionValue("j"), db);
 					}
 				}
 			}

@@ -56,6 +56,8 @@ public class Item
 		CommunicationType = communicationType;
 	}
 
+	public Item() { }
+
 	public int getPId()
 	{
 		return PID;
