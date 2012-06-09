@@ -6,7 +6,10 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import models.Issue;
 import models.Item;
+import models.Person;
+import models.jira.JiraComment;
 import models.jira.JiraIssue;
 import models.jira.JiraIssueQuery;
 
@@ -24,8 +27,8 @@ import db.ComDb;
 
 public class Jira
 {
-	public int currentIssueCount = 0;
-	public int maxIssueCount;
+	public int currentIssueCount = 1;
+	public int totalIssueCount = 2; // initial dummy value
 	public Gson gson;
 	public String location;
 	public ComDb db;
@@ -42,7 +45,8 @@ public class Jira
 		// initialize the Jira Client
 		initJira(location, db);
 		//https://hibernate.onjira.com/rest/api/latest/search?jql=null&startAt=0&fields=*all
-		getNextIssues(currentIssueCount);
+		while(currentIssueCount < totalIssueCount)
+			getNextIssues(currentIssueCount);
 	}
 	
 	public List<JiraIssue> getNextIssues(int startPosition)
@@ -66,11 +70,12 @@ public class Jira
 			if (entity != null)
 			{
 				JiraIssueQuery jiraQuery = gson.fromJson(EntityUtils.toString(entity), JiraIssueQuery.class);
-				maxIssueCount = jiraQuery.getTotal();
+				totalIssueCount = jiraQuery.getTotal();
 				for (JiraIssue jiraIssue : jiraQuery.getIssues())
 				{
+					ComResources.log("Issues done: %d/%d", currentIssueCount, totalIssueCount);
 					currentIssueCount++;
-					ParseIssueIntoDb(jiraIssue);
+//					ParseIssueIntoDb(jiraIssue);
 					// TODO @braden insert into db
 				}
 			}
@@ -86,8 +91,73 @@ public class Jira
 		return issues;
 	}
 	
+	/**
+	 * <p>Parse a given JiraIssue into the social technical network schema.</p>
+	 * @param jiraIssue
+	 */
 	public void ParseIssueIntoDb(JiraIssue jiraIssue)
 	{
+		//-----------------------------------------------------------------------------
+		// Create the creator and insert
+		//-----------------------------------------------------------------------------
+		Person newCreator = new Person(-1,
+					jiraIssue.getFields().getReporter().getDisplayName(),
+					jiraIssue.getFields().getReporter().getEmailAddress());
+		int pID = db.insertPerson(newCreator);
+
+		//-----------------------------------------------------------------------------
+		// Create the assignee if exists and insert it
+		//-----------------------------------------------------------------------------
+		Person newAssignee = null;
+		if (jiraIssue.getFields().getAssignee() != null)
+		{
+			newAssignee = new Person(-1, 
+					jiraIssue.getFields().getAssignee().getDisplayName(),
+					jiraIssue.getFields().getAssignee().getEmailAddress());
+			newAssignee.setPID(db.insertPerson(newAssignee));
+		}
 		
+		//-----------------------------------------------------------------------------
+		// Create the item and insert it
+		//-----------------------------------------------------------------------------
+		Item newItem = new Item(jiraIssue);
+		newItem.setPId(pID);
+		int itemID = db.insertItem(newItem);
+		
+		//-----------------------------------------------------------------------------
+		// Create the issue and insert it
+		//-----------------------------------------------------------------------------
+		Issue newIssue = new Issue(jiraIssue);
+		newIssue.setCreatorID(pID);
+		
+		if (newAssignee != null) {
+			newIssue.setAssignedID(newAssignee.getPID());
+			newIssue.setAssignee(newAssignee.getEmail());
+		}
+		
+		db.insertIssue(newIssue);
+		ParseIssueComments(jiraIssue);
+	}
+	
+	/**
+	 * <p>Parse through the comments on each issue and insert them into the corresponding 
+	 * threads, comments, and persons tables.</p>
+	 * @author bradens
+	 * @param jiraIssue
+	 */
+	public void ParseIssueComments(JiraIssue jiraIssue)
+	{
+		for (JiraComment comment : jiraIssue.getFields().getComment().getComments())
+		{
+			Person newPerson = new Person(-1,
+					comment.getAuthor().getDisplayName(),
+					comment.getAuthor().getEmailAddress());
+			newPerson.setPID(db.insertPerson(newPerson));
+			Item newCommentItem = new Item(comment);
+			newCommentItem.setItemId(db.insertItem(newCommentItem));
+			
+			// TODO @braden insert into threads table and finish.
+			// after the schema change.
+		}
 	}
 }

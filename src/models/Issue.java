@@ -2,6 +2,10 @@ package models;
 
 import java.sql.Timestamp;
 
+import org.apache.commons.lang3.StringUtils;
+
+import models.jira.JiraIssue;
+
 public class Issue
 {
 	private int itemID;
@@ -16,6 +20,19 @@ public class Issue
 	private String creator;
 	private String keywords;
 	private String issueNum;
+	
+	public Issue(JiraIssue issue)
+	{
+		status = issue.getFields().getStatus().getName();
+		assignee = issue.getFields().getAssignee().getEmailAddress();
+		creationTS = Timestamp.valueOf(issue.getFields().getCreated());
+		lastModifiedTS = Timestamp.valueOf(issue.getFields().getUpdated());
+		title = issue.getFields().getSummary();
+		description = issue.getFields().getDescription();
+		creator = issue.getFields().getReporter().getEmailAddress();
+		keywords = StringUtils.join(issue.getFields().getLabels(), " , ");
+		issueNum = issue.getKey();
+	}	
 	
 	public Issue()
 	{
