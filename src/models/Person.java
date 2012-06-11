@@ -2,7 +2,7 @@ package models;
 
 public class Person
 {
-	private int 	PID;
+	private int 	PID = -1;
 	private String 	name;
 	private String	email;
 	

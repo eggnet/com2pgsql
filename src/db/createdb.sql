@@ -1,3 +1,6 @@
+-- TEST LINE
+
+
 --
 -- PostgreSQL database dump
 --
@@ -10,7 +13,7 @@ SET client_min_messages = warning;
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
---///////////////// People TABLE /////////////////--
+--///////////////// PEOPLE TABLE /////////////////--
 CREATE SEQUENCE people_id_seq
 	START WITH 1
 	INCREMENT BY 1
@@ -24,6 +27,7 @@ CREATE TABLE people (
 	email varchar(255) NOT NULL
 );
 
+insert into people values(-1, 'null', 'null');
 
 ALTER SEQUENCE people_id_seq OWNED BY people.p_id;
 
@@ -67,7 +71,7 @@ CREATE TABLE silents (
 CREATE TABLE issues (
 	item_id integer NOT NULL references items(item_id),
 	status varchar(255),
-	assignee_id integer NOT NULL references people(p_id),
+	assignee_id integer references people(p_id),
 	creation_ts timestamp with time zone,
 	last_modified_ts timestamp with time zone,
 	title varchar(512),

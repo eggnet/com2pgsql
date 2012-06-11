@@ -2,6 +2,7 @@ package jira;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -97,46 +98,53 @@ public class Jira
 	 */
 	public void ParseIssueIntoDb(JiraIssue jiraIssue)
 	{
-		//-----------------------------------------------------------------------------
-		// Create the creator and insert
-		//-----------------------------------------------------------------------------
-		Person newCreator = new Person(-1,
-					jiraIssue.getFields().getReporter().getDisplayName(),
-					jiraIssue.getFields().getReporter().getEmailAddress());
-		int pID = db.insertPerson(newCreator);
-
-		//-----------------------------------------------------------------------------
-		// Create the assignee if exists and insert it
-		//-----------------------------------------------------------------------------
-		Person newAssignee = null;
-		if (jiraIssue.getFields().getAssignee() != null)
+		try {
+			//-----------------------------------------------------------------------------
+			// Create the creator and insert
+			//-----------------------------------------------------------------------------
+			Person newCreator = new Person(-1,
+						jiraIssue.getFields().getReporter().getDisplayName(),
+						jiraIssue.getFields().getReporter().getEmailAddress());
+			int pID = db.insertPerson(newCreator);
+	
+			//-----------------------------------------------------------------------------
+			// Create the assignee if exists and insert it
+			//-----------------------------------------------------------------------------
+			Person newAssignee = null;
+			if (jiraIssue.getFields().getAssignee() != null)
+			{
+				newAssignee = new Person(-1, 
+						jiraIssue.getFields().getAssignee().getDisplayName(),
+						jiraIssue.getFields().getAssignee().getEmailAddress());
+				newAssignee.setPID(db.insertPerson(newAssignee));
+			}
+			
+			//-----------------------------------------------------------------------------
+			// Create the item and insert it
+			//-----------------------------------------------------------------------------
+			Item newItem = new Item(jiraIssue);
+			newItem.setPId(pID);
+			newItem.setItemId(db.insertItem(newItem));
+			
+			//-----------------------------------------------------------------------------
+			// Create the issue and insert it
+			//-----------------------------------------------------------------------------
+			Issue newIssue = new Issue(jiraIssue);
+			newIssue.setCreatorID(pID);
+			newIssue.setItemID(newItem.getItemId());
+			
+			if (newAssignee != null) {
+				newIssue.setAssignedID(newAssignee.getPID());
+				newIssue.setAssignee(newAssignee.getEmail());
+			}
+			
+			db.insertIssue(newIssue);
+			ParseIssueComments(jiraIssue, newIssue.getItemID());
+		}
+		catch (ParseException e)
 		{
-			newAssignee = new Person(-1, 
-					jiraIssue.getFields().getAssignee().getDisplayName(),
-					jiraIssue.getFields().getAssignee().getEmailAddress());
-			newAssignee.setPID(db.insertPerson(newAssignee));
+			e.printStackTrace();
 		}
-		
-		//-----------------------------------------------------------------------------
-		// Create the item and insert it
-		//-----------------------------------------------------------------------------
-		Item newItem = new Item(jiraIssue);
-		newItem.setPId(pID);
-		newItem.setItemId(db.insertItem(newItem));
-		
-		//-----------------------------------------------------------------------------
-		// Create the issue and insert it
-		//-----------------------------------------------------------------------------
-		Issue newIssue = new Issue(jiraIssue);
-		newIssue.setCreatorID(pID);
-		
-		if (newAssignee != null) {
-			newIssue.setAssignedID(newAssignee.getPID());
-			newIssue.setAssignee(newAssignee.getEmail());
-		}
-		
-		db.insertIssue(newIssue);
-		ParseIssueComments(jiraIssue, newIssue.getItemID());
 	}
 	
 	/**
@@ -148,17 +156,25 @@ public class Jira
 	 */
 	public void ParseIssueComments(JiraIssue jiraIssue, int issueItemId)
 	{
-		for (JiraComment comment : jiraIssue.getFields().getComment().getComments())
+		try {
+			for (JiraComment comment : jiraIssue.getFields().getComment().getComments())
+			{
+				Person newPerson = new Person(-1,
+						comment.getAuthor().getDisplayName(),
+						comment.getAuthor().getEmailAddress());
+				newPerson.setPID(db.insertPerson(newPerson));
+				Item newCommentItem = new Item(comment);
+				newCommentItem.setPerson(newPerson.getEmail());
+				newCommentItem.setPId(newPerson.getPID());
+				newCommentItem.setItemId(db.insertItem(newCommentItem));
+				
+				models.Thread newThread = new models.Thread(newCommentItem.getItemId(), issueItemId);
+				db.insertThread(newThread);
+			}
+		}
+		catch (ParseException e)
 		{
-			Person newPerson = new Person(-1,
-					comment.getAuthor().getDisplayName(),
-					comment.getAuthor().getEmailAddress());
-			newPerson.setPID(db.insertPerson(newPerson));
-			Item newCommentItem = new Item(comment);
-			newCommentItem.setItemId(db.insertItem(newCommentItem));
-			
-			models.Thread newThread = new models.Thread(newCommentItem.getItemId(), issueItemId);
-			db.insertThread(newThread);
+			e.printStackTrace();
 		}
 	}
 }

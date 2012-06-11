@@ -2,6 +2,7 @@ package db;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -48,7 +49,7 @@ public class ComDb extends DbConnection
 			connect(dbName.toLowerCase());
 			
 			// Now load our default schema in.
-			sr.runScript(new BufferedReader(new FileReader("src/db/createdb.sql")));
+			sr.runScript(new InputStreamReader(this.getClass().getResourceAsStream("createdb.sql")));
 			return true;
 		}
 		catch (Exception e)

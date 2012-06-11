@@ -70,7 +70,7 @@ public class Main
 											   .create("e");
 				
 				Option jiraOpt 	= OptionBuilder.withArgName("j")
-											   .hasArg()
+											   .hasArgs(2)
 											   .create("j");
 				
 				options.addOption(bugzilla);
@@ -80,6 +80,8 @@ public class Main
 				
 				CommandLine line = parser.parse(options, args);
 				
+				db = new ComDb();
+
 				// Check for database
 				if(line.hasOption("d")) {
 				    String[] values = line.getOptionValues("d");
@@ -91,7 +93,7 @@ public class Main
 				    else {
 				    	// Create the DB
 				    	System.out.println("Creating database");
-						db = new ComDb();
+				    	ComResources.log(ComResources.dbUrl);
 						db.connect(Resources.EGGNET_DB_NAME);
 						db.createDb(line.getOptionValue("d"));
 				    }
@@ -127,7 +129,7 @@ public class Main
 				// Check for jira
 				if (line.hasOption("j")) {
 					String[] values = line.getOptionValues("j");
-					if (values.length != 1) {
+					if (values.length != 2) {
 						System.out.println("-j flag used incorrectly");
 						printMan();
 						return;
@@ -135,7 +137,8 @@ public class Main
 					else {
 						System.out.println("Running Jira parser on " + line.getOptionValue("j"));
 						jira = new Jira();
-						jira.parseJira(line.getOptionValue("j"), db);
+						db.connect(values[0]);
+						jira.parseJira(values[1], db);
 					}
 				}
 			}

@@ -2,12 +2,14 @@ package models;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.ParseException;
 
 import models.jira.JiraComment;
 import models.jira.JiraIssue;
 
 import comm.ComResources;
 import comm.ComResources.CommType;
+import db.Resources;
 
 /**
  * Stores the record of an Item of communication
@@ -29,19 +31,22 @@ public class Item
 	private String Title;
 	private CommType CommunicationType;
 
-	public Item(JiraIssue issue)
+	public Item(JiraIssue issue) throws ParseException
 	{
+		ComResources.JiraDateFormat.setLenient(false);
 		person = issue.getFields().getReporter().getEmailAddress();
-		ItemDate = Timestamp.valueOf(issue.getFields().getCreated());
+		java.util.Date d = ComResources.JiraDateFormat.parse(issue.getFields().getCreated().replace("T", " "));
+		ItemDate = new Timestamp(d.getTime());
 		Body = issue.getFields().getDescription();
 		Title = issue.getFields().getSummary();
 		CommunicationType = ComResources.CommType.ISSUE;
 	}
 	
-	public Item(JiraComment comment)
+	public Item(JiraComment comment) throws ParseException
 	{
 		person = comment.getAuthor().getEmailAddress();
-		ItemDate = Timestamp.valueOf(comment.getCreated());
+		java.util.Date createdDate = ComResources.JiraDateFormat.parse(comment.getCreated().replace("T", " "));
+		ItemDate = new Timestamp(createdDate.getTime());
 		Body = comment.getBody();
 		Title = null;
 		CommunicationType = CommunicationType.JIRA;

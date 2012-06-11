@@ -1,8 +1,11 @@
 package models;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 
 import org.apache.commons.lang3.StringUtils;
+
+import comm.ComResources;
 
 import models.jira.JiraIssue;
 
@@ -10,7 +13,7 @@ public class Issue
 {
 	private int itemID;
 	private String status;
-	private int assignedID;
+	private int assignedID = -1;
 	private String assignee;
 	private Timestamp creationTS;
 	private Timestamp lastModifiedTS;
@@ -21,16 +24,24 @@ public class Issue
 	private String keywords;
 	private String issueNum;
 	
-	public Issue(JiraIssue issue)
+	public Issue(JiraIssue issue) throws ParseException
 	{
 		status = issue.getFields().getStatus().getName();
-		assignee = issue.getFields().getAssignee().getEmailAddress();
-		creationTS = Timestamp.valueOf(issue.getFields().getCreated());
-		lastModifiedTS = Timestamp.valueOf(issue.getFields().getUpdated());
+		
+		if (issue.getFields().getAssignee() != null)
+			assignee = issue.getFields().getAssignee().getEmailAddress();
+	
+		java.util.Date createdDate = ComResources.JiraDateFormat.parse(issue.getFields().getCreated().replace("T", " "));
+		java.util.Date modifiedDate = ComResources.JiraDateFormat.parse(issue.getFields().getCreated().replace("T", " "));
+		
+		creationTS = new Timestamp(createdDate.getTime());
+		lastModifiedTS = new Timestamp(modifiedDate.getTime());
+		
 		title = issue.getFields().getSummary();
 		description = issue.getFields().getDescription();
 		creator = issue.getFields().getReporter().getEmailAddress();
-		keywords = StringUtils.join(issue.getFields().getLabels(), " , ");
+		if (issue.getFields().getLabels() != null)
+			keywords = StringUtils.join(issue.getFields().getLabels(), " , ");
 		issueNum = issue.getKey();
 	}	
 	
