@@ -3,6 +3,10 @@ package models;
 import java.sql.Date;
 import java.sql.Timestamp;
 
+import models.jira.JiraComment;
+import models.jira.JiraIssue;
+
+import comm.ComResources;
 import comm.ComResources.CommType;
 
 /**
@@ -25,6 +29,24 @@ public class Item
 	private String Title;
 	private CommType CommunicationType;
 
+	public Item(JiraIssue issue)
+	{
+		person = issue.getFields().getReporter().getEmailAddress();
+		ItemDate = Timestamp.valueOf(issue.getFields().getCreated());
+		Body = issue.getFields().getDescription();
+		Title = issue.getFields().getSummary();
+		CommunicationType = ComResources.CommType.ISSUE;
+	}
+	
+	public Item(JiraComment comment)
+	{
+		person = comment.getAuthor().getEmailAddress();
+		ItemDate = Timestamp.valueOf(comment.getCreated());
+		Body = comment.getBody();
+		Title = null;
+		CommunicationType = CommunicationType.JIRA;
+	}
+	
 	/**
 	 * @param pId
 	 * @param timestamp
