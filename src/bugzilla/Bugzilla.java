@@ -64,7 +64,8 @@ public class Bugzilla
 				issue.setItemID(itemID);
 				
 				// Insert the thread
-				currentThread = comDB.insertThreadUnknownThread(new models.Thread(itemID, -1));
+				comDB.insertThread(new models.Thread(itemID, itemID));
+				currentThread = itemID;
 				
 				// Insert the issue
 				comDB.insertIssue(issue);
@@ -107,7 +108,7 @@ public class Bugzilla
 			item.setItemId(itemID);
 			
 			// Insert thread
-			comDB.insertThreadKnownThread(new models.Thread(itemID, threadID));
+			comDB.insertThread(new models.Thread(itemID, threadID));
 		}
 	}
 }

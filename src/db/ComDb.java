@@ -120,46 +120,12 @@ public class ComDb extends DbConnection
 		return inserts;
 	}
 	
-	public int insertThreadUnknownThread(models.Thread thread) {
-		try 
-		{
-			// Insert
-			PreparedStatement s = conn.prepareStatement(
-					"INSERT INTO threads (item_id, thread_id) VALUES " +
-					"(" + thread.getItemID() + ", default)");
-			s.execute();
-			
-			return getSequenceValue("threads_id_seq");
-		}
-		catch(SQLException e) 
-		{
-			e.printStackTrace();
-			return -1;
-		}
-	}
-	
-	public boolean insertThreadKnownThread(models.Thread thread) {
+	public boolean insertThread(models.Thread thread) {
 		try 
 		{
 			PreparedStatement s = conn.prepareStatement(
 					"INSERT INTO threads (item_id, thread_id) VALUES " +
 					"(" + thread.getItemID() + ", " + thread.getThreadID() + ")");
-			s.execute();
-		}
-		catch(SQLException e) 
-		{
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-	
-	public boolean insertReply(Reply reply) {
-		try 
-		{
-			PreparedStatement s = conn.prepareStatement(
-					"INSERT INTO replies (from_item_id, to_item_id) VALUES " +
-					"(" + reply.getFromItemID() + ", " + reply.getToItemID() + ")");
 			s.execute();
 		}
 		catch(SQLException e) 
@@ -251,7 +217,7 @@ public class ComDb extends DbConnection
 		{
 			LinkedList<Item> items = new LinkedList<Item>();
 			String sql = "SELECT p_id, item_date, item_id, body, title, type" +
-					" FROM threads NATURAL JOIN items" +
+					" FROM threads JOIN items ON (threads.item_id = item.item_id)" +
 					" WHERE thread_id=?"; 
 			String[] parms = {Integer.toString(ThreadID)};
 			ResultSet rs = execPreparedQuery(sql, parms);

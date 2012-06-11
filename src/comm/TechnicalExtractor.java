@@ -37,7 +37,19 @@ public class TechnicalExtractor //implements SpellCheckListener
 	public List<String> getTechnicalInformation(String body) {
 		List<String> technicalInformation = new ArrayList<String>();
 		
-		
+		String[] split = body.split("\\s");
+		String currentPhrase = "";
+		for(String word: split) {
+			if(isTechnicalWord(word)) {
+				currentPhrase = currentPhrase.concat(" " + word);
+			}
+			else {
+				if(!currentPhrase.equals("")) {
+					technicalInformation.add(currentPhrase.trim());
+					currentPhrase = "";
+				}
+			}
+		}
 		
 		return technicalInformation;
 	}
