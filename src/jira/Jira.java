@@ -74,9 +74,9 @@ public class Jira
 				for (JiraIssue jiraIssue : jiraQuery.getIssues())
 				{
 					ComResources.log("Issues done: %d/%d", currentIssueCount, totalIssueCount);
+					ComResources.log("Current Issue %s", jiraIssue.getFields().getSummary());
+					ParseIssueIntoDb(jiraIssue);
 					currentIssueCount++;
-//					ParseIssueIntoDb(jiraIssue);
-					// TODO @braden insert into db
 				}
 			}
 		}
@@ -122,7 +122,7 @@ public class Jira
 		//-----------------------------------------------------------------------------
 		Item newItem = new Item(jiraIssue);
 		newItem.setPId(pID);
-		int itemID = db.insertItem(newItem);
+		newItem.setItemId(db.insertItem(newItem));
 		
 		//-----------------------------------------------------------------------------
 		// Create the issue and insert it
@@ -136,7 +136,7 @@ public class Jira
 		}
 		
 		db.insertIssue(newIssue);
-		ParseIssueComments(jiraIssue);
+		ParseIssueComments(jiraIssue, newIssue.getItemID());
 	}
 	
 	/**
@@ -144,8 +144,9 @@ public class Jira
 	 * threads, comments, and persons tables.</p>
 	 * @author bradens
 	 * @param jiraIssue
+	 * @param issueItemId
 	 */
-	public void ParseIssueComments(JiraIssue jiraIssue)
+	public void ParseIssueComments(JiraIssue jiraIssue, int issueItemId)
 	{
 		for (JiraComment comment : jiraIssue.getFields().getComment().getComments())
 		{
@@ -156,8 +157,8 @@ public class Jira
 			Item newCommentItem = new Item(comment);
 			newCommentItem.setItemId(db.insertItem(newCommentItem));
 			
-			// TODO @braden insert into threads table and finish.
-			// after the schema change.
+			models.Thread newThread = new models.Thread(newCommentItem.getItemId(), issueItemId);
+			db.insertThread(newThread);
 		}
 	}
 }
