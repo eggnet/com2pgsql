@@ -19,7 +19,6 @@ import models.Item;
 import models.Link;
 import models.Person;
 import models.Item;
-import models.Reply;
 import models.Silent;
 
 public class ComDb extends DbConnection
