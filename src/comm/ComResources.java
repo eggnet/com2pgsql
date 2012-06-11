@@ -8,6 +8,10 @@ public class ComResources extends Resources
 		EMAIL, BUGZILLA, JIRA, ISSUE, GITHUB, FORUM
 	}
 	
+	public enum TextType {
+		PATCH, SOURCE, TRACE, NAME
+	}
+	
 	public static final int JIRA_MAX_RESULTS = 50;
 	public static int DB_LIMIT = 2000;
 }

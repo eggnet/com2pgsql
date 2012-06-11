@@ -26,25 +26,25 @@ public class Main
 	@SuppressWarnings("static-access")
 	public static void main(String[] args)
 	{
-		TechnicalExtractor te = new TechnicalExtractor();
-		List<String> results = te.getTechnicalInformation(
-				"The code after \"if (callback.isAcceleratorInUse(SWT.ALT | character))\" inside " + 
-						"Eclipse's MenuManager.java removes the mnemonic, but it seems like Eclipse " + 
-						"should be checking \"isAcceleratorInUse\" only for top level menumanagers like " + 
-						"File,Edit,...,Help, etc.  : " + 
-						"/* (non-Javadoc) " + 
-						"* @see org.eclipse.jface.action.IContributionItem#update(java.lang.String) " + 
-						"*/ " + 
-						" public void update(String property) { " + 
-						"IContributionItem items[] = getItems(); " + 
-						" for (int i = 0; i < items.length; i++) { " + 
-						"items[i].update(property); " + 
-				"}");
-
-		for(String r: results) {
-			System.out.println("TECHNICAL");
-			System.out.println(r);
-		}
+//		TechnicalExtractor te = new TechnicalExtractor();
+//		List<String> results = te.getTechnicalInformation(
+//				"The code after \"if (callback.isAcceleratorInUse(SWT.ALT | character))\" inside " + 
+//						"Eclipse's MenuManager.java removes the mnemonic, but it seems like Eclipse " + 
+//						"should be checking \"isAcceleratorInUse\" only for top level menumanagers like " + 
+//						"File,Edit,...,Help, etc.  : " + 
+//						"/* (non-Javadoc) " + 
+//						"* @see org.eclipse.jface.action.IContributionItem#update(java.lang.String) " + 
+//						"*/ " + 
+//						" public void update(String property) { " + 
+//						"IContributionItem items[] = getItems(); " + 
+//						" for (int i = 0; i < items.length; i++) { " + 
+//						"items[i].update(property); " + 
+//				"}");
+//
+//		for(String r: results) {
+//			System.out.println("TECHNICAL");
+//			System.out.println(r);
+//		}
 		
 		System.out.println("Com2Pgsql tool developed by eggnet at UVic.");
 		CommandLineParser parser = new GnuParser();
