@@ -49,32 +49,17 @@ ALTER SEQUENCE items_id_seq OWNED BY items.item_id;
 
 --///////////////// THREADS TABLE /////////////////-- 
 
-CREATE SEQUENCE threads_id_seq
-	START WITH 1
-	INCREMENT BY 1
-	NO MINVALUE
-	NO MAXVALUE
-	CACHE 1;
-
 CREATE TABLE threads (
-	item_id integer NOT NULL references items(item_id) ON DELETE CASCADE PRIMARY KEY,
-	thread_id integer NOT NULL DEFAULT NEXTVAL('threads_id_seq'::regclass)
+	item_id integer NOT NULL references items(item_id) ON DELETE CASCADE,
+	thread_id integer NOT NULL references items(item_id) ON DELETE CASCADE,
+	PRIMARY KEY (item_id, thread_id) 
 );
-
-ALTER SEQUENCE threads_id_seq OWNED BY threads.thread_id;
 
 --///////////////// SILENTS TABLE /////////////////-- 
 
 CREATE TABLE silents (
 	item_id integer NOT NULL references items(item_id),
 	p_id integer NOT NULL references people(p_id)
-);
-
---///////////////// REPLIES TABLE /////////////////-- 
-
-CREATE TABLE replies (
-	from_item_id integer NOT NULL references items(item_id) ON DELETE CASCADE,
-	to_item_id integer NOT NULL references items(item_id) ON DELETE CASCADE
 );
 
 --///////////////// ISSUES TABLE /////////////////-- 
