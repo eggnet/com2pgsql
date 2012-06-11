@@ -2,7 +2,6 @@ package db;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,17 +9,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import comm.ComResources.CommType;
-
 import models.Attachment;
-import models.Change;
 import models.Issue;
 import models.Item;
 import models.Link;
 import models.Person;
-import models.Item;
-import models.Reply;
 import models.Silent;
+
+import comm.ComResources.CommType;
 
 public class ComDb extends DbConnection
 {
