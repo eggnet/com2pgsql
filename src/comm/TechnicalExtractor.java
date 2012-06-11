@@ -68,10 +68,10 @@ public class TechnicalExtractor //implements SpellCheckListener
 	}
 	
 	private boolean checkCamelCase(String token) {
-		return(token.matches("(\\b([A-Z_][a-z_0-9]*)+[A-Z_0-9][a-z_0-9]+([A-Z_0-9][a-z_0-9]*)*\\b)") ||
-				token.matches("(\\b([a-z_][a-z_0-9]*)+([A-Z_0-9][a-z_0-9]*)+\\b)") ||
-				token.matches("(\\b([A-Z_][A-Z_0-9]+)\\b)") ||
-				token.matches("(\\b(([A-Z_][a-z_0-9]*)+([A-Z_0-9]+))\\b)"));
+		return(token.matches(".*(([A-Z_][a-z_0-9]*)+[A-Z_0-9][a-z_0-9]+([A-Z_0-9][a-z_0-9]*)*).*") ||
+				token.matches(".*(([a-z_][a-z_0-9]*)+([A-Z_0-9][a-z_0-9]*)+).*") ||
+				token.matches(".*(([A-Z_][A-Z_0-9]+)).*") ||
+				token.matches(".*((([A-Z_][a-z_0-9]*)+([A-Z_0-9]+))).*"));
 	}
 	
 	private boolean checkKeywords(String token) {
