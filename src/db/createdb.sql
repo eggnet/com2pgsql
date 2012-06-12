@@ -1,6 +1,3 @@
--- TEST LINE
-
-
 --
 -- PostgreSQL database dump
 --
@@ -27,6 +24,7 @@ CREATE TABLE people (
 	email varchar(255) NOT NULL
 );
 
+-- Insert a record for other tables that have references to user fields with no pid --
 insert into people values(-1, 'null', 'null');
 
 ALTER SEQUENCE people_id_seq OWNED BY people.p_id;
