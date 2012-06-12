@@ -11,7 +11,7 @@ public class ComResources extends Resources
 	}
 	public static final SimpleDateFormat JiraDateFormat = new SimpleDateFormat("yyyy-mm-dd kk:mm:ss.SSSZ");
 	public enum TextType {
-		PATCH, SOURCE, TRACE, NAME
+		PATCH, SOURCE, TRACE, NAME, KEYWORD
 	}
 	
 	public static final int JIRA_MAX_RESULTS = 50;
