@@ -7,11 +7,13 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import models.Dependency;
 import models.Issue;
 import models.Item;
 import models.Person;
 import models.jira.JiraComment;
 import models.jira.JiraIssue;
+import models.jira.JiraIssueLink;
 import models.jira.JiraIssueQuery;
 
 import org.apache.http.HttpEntity;
@@ -33,21 +35,59 @@ public class Jira
 	public Gson gson;
 	public String location;
 	public ComDb db;
+	private List<TemporaryIssueLink> tempLinks;
+	
+	private class TemporaryIssueLink {
+		private int ItemID;
+		private String DependsKey;
+		
+		public TemporaryIssueLink(int itemID, String dependsKey)
+		{
+			ItemID = itemID;
+			DependsKey = dependsKey;
+		}
+		public int getItemID()
+		{
+			return ItemID;
+		}
+		@SuppressWarnings("unused")
+		public void setItemID(int itemID)
+		{
+			ItemID = itemID;
+		}
+		@SuppressWarnings("unused")
+		public String getDependsKey()
+		{
+			return DependsKey;
+		}
+		@SuppressWarnings("unused")
+		public void setDependsKey(String dependsKey)
+		{
+			DependsKey = dependsKey;
+		}
+	}
 	
 	public void initJira(String location, ComDb db) throws URISyntaxException
 	{
 		gson = new Gson();
 		this.location = location;
 		this.db = db;
+		this.tempLinks = new LinkedList<TemporaryIssueLink>();
 	}
 	
 	public void parseJira(String location, ComDb db) throws URISyntaxException
 	{
 		// initialize the Jira Client
 		initJira(location, db);
-		//https://hibernate.onjira.com/rest/api/latest/search?jql=null&startAt=0&fields=*all
 		while(currentIssueCount < totalIssueCount)
 			getNextIssues(currentIssueCount);
+		
+		// Now resolve our temporary links into hard links.
+		for (TemporaryIssueLink tLink : this.tempLinks)
+		{
+			int dependsID = db.findItemIDFromJiraKey(tLink.DependsKey);
+			db.insertDependency(new Dependency(tLink.getItemID(), dependsID));
+		}
 	}
 	
 	public List<JiraIssue> getNextIssues(int startPosition)
@@ -139,6 +179,21 @@ public class Jira
 			}
 			
 			db.insertIssue(newIssue);
+			
+			//-----------------------------------------------------------------------------
+			// Create the issue links and insert them
+			//-----------------------------------------------------------------------------
+			
+			if (jiraIssue.getFields().getIssueLinks() != null)
+			{
+				for (JiraIssueLink jLink : jiraIssue.getFields().getIssueLinks())
+				{
+					if (jLink.getInwardIssue() != null)
+						this.tempLinks.add(new TemporaryIssueLink(newIssue.getItemID(), jLink.getInwardIssue().getKey()));
+					if (jLink.getOutwardIssue() != null)
+						this.tempLinks.add(new TemporaryIssueLink(newIssue.getItemID(), jLink.getOutwardIssue().getKey()));
+				}
+			}
 			ParseIssueComments(jiraIssue, newIssue.getItemID());
 		}
 		catch (ParseException e)

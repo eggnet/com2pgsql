@@ -10,6 +10,7 @@ public class JiraIssueField
 	private String summary;
 	private String description;
 	private String[] labels;
+	private JiraIssueLink[] issuelinks;
 	private JiraPerson reporter;
 	private JiraCommentBlock comment;
 	
@@ -84,5 +85,13 @@ public class JiraIssueField
 	public void setLabels(String[] labels)
 	{
 		this.labels = labels;
+	}
+	public JiraIssueLink[] getIssueLinks()
+	{
+		return issuelinks;
+	}
+	public void setIssueLinks(JiraIssueLink[] issueLinks)
+	{
+		this.issuelinks = issueLinks;
 	}
 }

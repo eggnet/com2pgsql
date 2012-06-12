@@ -87,6 +87,13 @@ CREATE TABLE attachments (
 	body text
 );
 
+--//////////////// DEPENDENCIES       /////////////////--
+
+CREATE TABLE dependencies(
+	item_id integer NOT NULL references items(item_id),
+	depends_on_id integer NOT NULL references items(item_id)
+);
+
 --///////////////// LINKS TABLE /////////////////-- 
 
 CREATE TABLE links (

@@ -4,18 +4,18 @@ import java.sql.Timestamp;
 
 import comm.ComResources.TextType;
 
-public class TechnicalText
+public class Extraction
 {
 	private TextType 	textType;
 	private String		text;
 	private Timestamp	date;
 	
-	public TechnicalText()
+	public Extraction()
 	{
 		super();
 	}
 
-	public TechnicalText(TextType textType, String text, Timestamp date)
+	public Extraction(TextType textType, String text, Timestamp date)
 	{
 		super();
 		this.textType = textType;

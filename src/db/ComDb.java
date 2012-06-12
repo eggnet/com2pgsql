@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import models.Attachment;
+import models.Dependency;
 import models.Issue;
 import models.Item;
 import models.Link;
@@ -209,6 +210,23 @@ public class ComDb extends DbConnection
 		return true;
 	}
 	
+	public boolean insertDependency(Dependency dependency)
+	{
+		try {
+			PreparedStatement s = conn.prepareStatement(
+					"INSERT INTO dependencies (item_id, depends_on_id) VALUES (?, ?)");
+			s.setInt(1, dependency.getItemID());
+			s.setInt(2, dependency.getDependsOnID());
+			s.execute();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
 	public List<Item> getItemsInThread(int ThreadID) {
 		try 
 		{
@@ -248,5 +266,24 @@ public class ComDb extends DbConnection
 			e.printStackTrace();
 			return -1;
 		}
+	}
+
+	public int findItemIDFromJiraKey(String dependsKey)
+	{
+		try 
+		{
+			// Get the ID
+			String sql = "SELECT item_id from issues where issue_num = ?";
+			String[] parms = {dependsKey};
+			ResultSet rs = execPreparedQuery(sql, parms);
+			if(rs.next())
+				return rs.getInt("item_id");
+			return -1;
+		}
+		catch(SQLException e) 
+		{
+			e.printStackTrace();
+			return -1;
+		}		
 	}
 }
