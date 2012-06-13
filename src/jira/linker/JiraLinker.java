@@ -4,10 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import comm.ComResources;
-
 import linker.Linker;
 import models.Commit;
+
+import comm.ComResources;
 
 import db.ComDb;
 import db.LinkerDb;
@@ -22,13 +22,9 @@ import db.LinkerDb;
  */
 public class JiraLinker extends Linker
 {
-	private ComDb		comDb;
-	private LinkerDb	linkerDb;
-
 	public JiraLinker(ComDb comDb, LinkerDb linkerDb)
 	{
-		this.comDb = comDb;
-		this.linkerDb = linkerDb;
+		super(comDb, linkerDb);
 	}
 
 	@Override
@@ -38,19 +34,26 @@ public class JiraLinker extends Linker
 		// Do the first pass of linking commits -> issues via commit messages
 		// and bug numbers
 		// -------------------------------------------------------------------------------------
-		LinkFromCommitMessagesJira();
+		LinkFromCommitMessages();
+		
+		// -------------------------------------------------------------------------------------
+		// Now get try to link items -> commits
+		// -------------------------------------------------------------------------------------
+		
 	}
 
-	public void LinkFromCommitMessagesJira()
+	@Override
+	public void LinkFromCommitMessages()
 	{
-		if (!ComResources.LINK_FROM_COMMIT_MSGS) return;
-		
+		if (!ComResources.LINK_FROM_COMMIT_MSGS)
+			return;
+
 		Set<Commit> commits = linkerDb.getAllCommits();
 		for (Commit c : commits)
 		{
-			// check it's commit message against all our bug numbers
+			// check its commit message against all our bug numbers
 			Set<String> bugNumbers = getBugNumbers(c);
-			for(String bugNumber : bugNumbers)
+			for (String bugNumber : bugNumbers)
 			{
 				Set<Integer> matchedIssueIds = comDb.getIssuesMatchingBugNumber(bugNumber);
 				for (Integer itemId : matchedIssueIds)
@@ -60,16 +63,16 @@ public class JiraLinker extends Linker
 			}
 		}
 	}
-	
+
 	public Set<String> getBugNumbers(Commit c)
 	{
 		Set<String> bugNumbers = new HashSet<String>();
-		
+
 		Matcher CommitMatcher = ComResources.BUG_NUMBER_REGEX.matcher(c.getComment());
-		
-		while(CommitMatcher.find())
+
+		while (CommitMatcher.find())
 			bugNumbers.add(CommitMatcher.group());
-		
+
 		return bugNumbers;
 	}
 }

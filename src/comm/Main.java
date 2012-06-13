@@ -16,11 +16,13 @@ import org.apache.commons.cli.Options;
 import bugzilla.Bugzilla;
 
 import db.ComDb;
+import db.LinkerDb;
 import db.Resources;
 
 public class Main
 {
 	public static ComDb db;
+	public static LinkerDb linkdb;
 	public static Jira jira;
 	
 	@SuppressWarnings("static-access")
@@ -70,7 +72,7 @@ public class Main
 											   .create("e");
 				
 				Option jiraOpt 	= OptionBuilder.withArgName("j")
-											   .hasArgs(2)
+											   .hasArgs(3)
 											   .create("j");
 				
 				options.addOption(bugzilla);
@@ -81,7 +83,8 @@ public class Main
 				CommandLine line = parser.parse(options, args);
 				
 				db = new ComDb();
-
+				linkdb = new LinkerDb();
+				
 				// Check for database
 				if(line.hasOption("d")) {
 				    String[] values = line.getOptionValues("d");
@@ -129,16 +132,29 @@ public class Main
 				// Check for jira
 				if (line.hasOption("j")) {
 					String[] values = line.getOptionValues("j");
-					if (values.length != 2) {
+					if (values.length > 4 || values.length < 3) {
 						System.out.println("-j flag used incorrectly");
 						printMan();
 						return;
 					}
 					else {
-						System.out.println("Running Jira parser on " + line.getOptionValue("j"));
 						jira = new Jira();
-						db.connect(values[0]);
-						jira.parseJira(values[1], db);
+						if (values[0].equals("-l"))
+						{
+							// only link.
+							db.connect(values[1]);
+							linkdb.connect(values[2]);
+							linkdb.setBranchName("master");
+							jira.linkJira(null, linkdb, db);
+						}
+						else
+						{
+							System.out.println("Running Jira parser on " + line.getOptionValue("j"));
+							db.connect(values[0]);
+							linkdb.connect(values[1]);
+							linkdb.setBranchName("master");
+							jira.parseJira(values[2], linkdb, db);
+						}
 					}
 				}
 			}

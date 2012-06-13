@@ -140,9 +140,9 @@ public class ComDb extends DbConnection
 		try 
 		{
 			PreparedStatement s = conn.prepareStatement(
-					"INSERT INTO replies (item_id, commit_id, confidence) VALUES " +
+					"INSERT INTO links (item_id, commit_id, confidence) VALUES " +
 					"(" + link.getItemID() + ", ?, " + link.getConfidence() + ")");
-			s.setString(2, link.getCommitID());
+			s.setString(1, link.getCommitID());
 			s.execute();
 		}
 		catch(SQLException e) 
@@ -298,7 +298,7 @@ public class ComDb extends DbConnection
 			ResultSet rs = execPreparedQuery(sql, parms);
 			while (rs.next())
 			{
-				issues.add(rs.getInt(0));
+				issues.add(rs.getInt(1));
 			}
 			return issues;
 		}
