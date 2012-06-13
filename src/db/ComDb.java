@@ -7,8 +7,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import models.Attachment;
 import models.Dependency;
@@ -285,5 +287,24 @@ public class ComDb extends DbConnection
 			e.printStackTrace();
 			return -1;
 		}		
+	}
+	
+	public Set<Integer> getIssuesMatchingBugNumber(String bugNumber)
+	{
+		Set<Integer> issues = new HashSet<Integer>();
+		try {
+			String sql = "SELECT item_id FROM issues WHERE issue_num=?";
+			String[] parms = {bugNumber};
+			ResultSet rs = execPreparedQuery(sql, parms);
+			while (rs.next())
+			{
+				issues.add(rs.getInt(0));
+			}
+			return issues;
+		}
+		catch(SQLException e)
+		{
+			return null;
+		}
 	}
 }

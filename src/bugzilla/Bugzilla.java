@@ -1,7 +1,5 @@
 package bugzilla;
 
-import http.HTTPRequester;
-
 import java.util.List;
 
 import models.Attachment;
@@ -10,7 +8,6 @@ import models.Item;
 import models.Person;
 import models.Silent;
 
-import com.google.gson.*;
 import comm.ComResources;
 import comm.ComResources.CommType;
 
@@ -34,11 +31,6 @@ public class Bugzilla
 	}
 	
 	public void parseBugzillaFromHTTP(String http) {
-		System.out.println("Retrieving Bugzilla information from: " + http);
-		
-		String bugJSON = HTTPRequester.sendGetRequest(http, "bug/35");
-		
-		Gson gson = new Gson();
 	}
 	
 	public void parseBugzilla() {
