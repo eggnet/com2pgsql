@@ -8,6 +8,7 @@ import java.util.List;
 import models.Attachment;
 import models.Issue;
 import models.Item;
+import models.Pair;
 import models.Person;
 
 import comm.ComResources;
@@ -101,6 +102,50 @@ public class BugzillaDb extends DbConnection
 				attachments.add(new Attachment(issue.getItemID(), rs.getString("filename"), rs.getString("thedata")));
 			}
 			return attachments;
+		}
+		catch(SQLException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public List<Pair<Integer,Integer>> getDependencies(int iLIMIT, int iOFFSET) {
+		try 
+		{
+			LinkedList<Pair<Integer, Integer>> depends = new LinkedList<Pair<Integer, Integer>>();
+			String sql = "SELECT * FROM bugzilla_dependencies " +
+					"ORDER BY bug_id " +
+					"LIMIT " + iLIMIT + " OFFSET " + iOFFSET; 
+			String[] parms = {};
+			ResultSet rs = execPreparedQuery(sql, parms);
+			while(rs.next())
+			{
+				depends.add(new Pair<Integer, Integer>(rs.getInt("blocked"), rs.getInt("dependson")));
+			}
+			return depends;
+		}
+		catch(SQLException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public List<Pair<Integer,Integer>> getDuplicates(int iLIMIT, int iOFFSET) {
+		try 
+		{
+			LinkedList<Pair<Integer, Integer>> depends = new LinkedList<Pair<Integer, Integer>>();
+			String sql = "SELECT * FROM bugzilla_duplicates " +
+					"ORDER BY bug_id " +
+					"LIMIT " + iLIMIT + " OFFSET " + iOFFSET; 
+			String[] parms = {};
+			ResultSet rs = execPreparedQuery(sql, parms);
+			while(rs.next())
+			{
+				depends.add(new Pair<Integer, Integer>(rs.getInt("dupe_of"), rs.getInt("dupe")));
+			}
+			return depends;
 		}
 		catch(SQLException e) 
 		{
