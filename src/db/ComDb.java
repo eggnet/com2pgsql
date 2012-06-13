@@ -307,4 +307,20 @@ public class ComDb extends DbConnection
 			return null;
 		}
 	}
+	
+	public int getItemIDFromBugNumber(int bugNum) {
+		try {
+			String sql = "SELECT item_id FROM issues WHERE issue_num=?";
+			String[] parms = {Integer.toString(bugNum)};
+			ResultSet rs = execPreparedQuery(sql, parms);
+			while (rs.next())
+				return rs.getInt("item_id");
+			
+			return -1;
+		}
+		catch(SQLException e)
+		{
+			return -1;
+		}
+	}
 }

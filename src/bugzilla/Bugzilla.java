@@ -3,8 +3,10 @@ package bugzilla;
 import java.util.List;
 
 import models.Attachment;
+import models.Dependency;
 import models.Issue;
 import models.Item;
+import models.Pair;
 import models.Person;
 import models.Silent;
 
@@ -86,6 +88,12 @@ public class Bugzilla
 				issues = bugzillaDB.getIssues(ComResources.DB_LIMIT, offset);
 			}
 		}
+		
+		// Do dependecies
+		parseDependecies();
+		
+		// Do duplicates
+		parseDuplicates();
 	}
 	
 	private void parseIssueComments(Issue issue, int threadID) {
@@ -102,5 +110,43 @@ public class Bugzilla
 			// Insert thread
 			comDB.insertThread(new models.Thread(itemID, threadID));
 		}
+	}
+	
+	private void parseDependecies() {
+		int offset = 0;
+		
+		List<Pair<Integer, Integer>> depends = bugzillaDB.getDependencies(ComResources.DB_LIMIT, offset);
+		for(;;) {
+			for(Pair<Integer, Integer> depend: depends) {
+				comDB.insertDependency(new Dependency(comDB.getItemIDFromBugNumber(depend.getFirst()), 
+						comDB.getItemIDFromBugNumber(depend.getSecond())));
+			}
+			
+			if(depends.size() < ComResources.DB_LIMIT)
+				break;
+			else {
+				offset += ComResources.DB_LIMIT;
+				depends = bugzillaDB.getDependencies(ComResources.DB_LIMIT, offset);
+			}
+		}
+	}
+	
+	private void parseDuplicates() {
+		int offset = 0;
+		
+		List<Pair<Integer, Integer>> depends = bugzillaDB.getDuplicates(ComResources.DB_LIMIT, offset);
+		for(;;) {
+			for(Pair<Integer, Integer> depend: depends) {
+				comDB.insertDependency(new Dependency(comDB.getItemIDFromBugNumber(depend.getFirst()), 
+						comDB.getItemIDFromBugNumber(depend.getSecond())));
+			}
+			
+			if(depends.size() < ComResources.DB_LIMIT)
+				break;
+			else {
+				offset += ComResources.DB_LIMIT;
+				depends = bugzillaDB.getDuplicates(ComResources.DB_LIMIT, offset);
+			}
+		}	
 	}
 }
