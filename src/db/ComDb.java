@@ -233,10 +233,10 @@ public class ComDb extends DbConnection
 		try 
 		{
 			LinkedList<Item> items = new LinkedList<Item>();
-			String sql = "SELECT p_id, item_date, item_id, body, title, type" +
-					" FROM threads JOIN items ON (threads.item_id = item.item_id)" +
-					" WHERE thread_id=?"; 
-			String[] parms = {Integer.toString(ThreadID)};
+			String sql = "SELECT p_id, item_date, items.item_id, body, title, type" +
+					" FROM threads JOIN items ON (threads.item_id = items.item_id)" +
+					" WHERE thread_id=" + ThreadID; 
+			String[] parms = {};
 			ResultSet rs = execPreparedQuery(sql, parms);
 			while(rs.next())
 			{
@@ -321,6 +321,52 @@ public class ComDb extends DbConnection
 		catch(SQLException e)
 		{
 			return -1;
+		}
+	}
+	
+	public List<Issue> getIssues(int iLIMIT, int iOFFSET) {
+		try 
+		{
+			LinkedList<Issue> issues = new LinkedList<Issue>();
+			String sql = "SELECT * FROM issues " +
+					"ORDER BY item_id " +
+					"LIMIT " + iLIMIT + " OFFSET " + iOFFSET; 
+			String[] parms = {};
+			ResultSet rs = execPreparedQuery(sql, parms);
+			while(rs.next())
+			{
+				issues.add(new Issue(rs.getInt("item_id"), rs.getString("status"), rs.getInt("assignee_id"), 
+						rs.getTimestamp("creation_ts"), rs.getTimestamp("last_modified_ts"), rs.getString("title"),
+						rs.getString("description"), rs.getInt("creator_id"), rs.getString("keywords"), 
+						rs.getString("issue_num")));
+			}
+			return issues;
+		}
+		catch(SQLException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public List<String> getCommitIDForIssue(Issue issue) {
+		try 
+		{
+			LinkedList<String> commitIDs = new LinkedList<String>();
+			String sql = "SELECT * FROM links " +
+					"WHERE item_id=" + issue.getItemID();
+			String[] parms = {};
+			ResultSet rs = execPreparedQuery(sql, parms);
+			while(rs.next())
+			{
+				commitIDs.add(rs.getString("commit_id"));
+			}
+			return commitIDs;
+		}
+		catch(SQLException e) 
+		{
+			e.printStackTrace();
+			return null;
 		}
 	}
 }

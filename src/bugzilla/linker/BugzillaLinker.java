@@ -17,13 +17,10 @@ import db.LinkerDb;
 
 public class BugzillaLinker extends Linker
 {
-	private ComDb		comDb;
-	private LinkerDb	linkerDb;
 
 	public BugzillaLinker(ComDb comDb, LinkerDb linkerDb)
 	{
-		this.comDb = comDb;
-		this.linkerDb = linkerDb;
+		super(comDb, linkerDb);
 	}
 
 	@Override
@@ -49,8 +46,9 @@ public class BugzillaLinker extends Linker
 			for(Pair<Integer, Float> bugNumber : bugNumbers)
 			{
 				Set<Integer> matchedIssueIds = comDb.getIssuesMatchingBugNumber(bugNumber.getFirst().toString());
-				for (Integer itemId : matchedIssueIds)
+				for (Integer itemId : matchedIssueIds) {
 					comDb.insertLink(new models.Link(itemId, c.getCommit_id(), bugNumber.getSecond()));
+				}
 			}
 		}
 	}
