@@ -39,7 +39,7 @@ public class JiraLinker extends Linker
 		// -------------------------------------------------------------------------------------
 		// Now get try to link items -> commits
 		// -------------------------------------------------------------------------------------
-		
+		LinkFromThreadItems();
 	}
 
 	@Override
