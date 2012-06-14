@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.util.List;
 
 import jira.Jira;
+import linker.Linker;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -14,6 +15,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
 import bugzilla.Bugzilla;
+import bugzilla.linker.BugzillaLinker;
 
 import db.ComDb;
 import db.LinkerDb;
@@ -27,27 +29,7 @@ public class Main
 	
 	@SuppressWarnings("static-access")
 	public static void main(String[] args)
-	{
-//		TechnicalExtractor te = new TechnicalExtractor();
-//		List<String> results = te.getTechnicalInformation(
-//				"The code after \"if (callback.isAcceleratorInUse(SWT.ALT | character))\" inside " + 
-//						"Eclipse's MenuManager.java removes the mnemonic, but it seems like Eclipse " + 
-//						"should be checking \"isAcceleratorInUse\" only for top level menumanagers like " + 
-//						"File,Edit,...,Help, etc.  : " + 
-//						"/* (non-Javadoc) " + 
-//						"* @see org.eclipse.jface.action.IContributionItem#update(java.lang.String) " + 
-//						"*/ " + 
-//						" public void update(String property) { " + 
-//						"IContributionItem items[] = getItems(); " + 
-//						" for (int i = 0; i < items.length; i++) { " + 
-//						"items[i].update(property); " + 
-//				"}");
-//
-//		for(String r: results) {
-//			System.out.println("TECHNICAL");
-//			System.out.println(r);
-//		}
-		
+	{	
 		System.out.println("Com2Pgsql tool developed by eggnet at UVic.");
 		CommandLineParser parser = new GnuParser();
 		try {
@@ -146,6 +128,7 @@ public class Main
 							linkdb.connect(values[2]);
 							linkdb.setBranchName("master");
 							jira.linkJira(null, linkdb, db);
+							
 						}
 						else
 						{
