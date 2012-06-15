@@ -83,6 +83,8 @@ public class Extractor
 		inputSummaryText = RegExHelper.makeLinuxNewlines(inputSummaryText);
 		outputSummaryText = inputSummaryText;
 		
+		
+		
 		patches = patchFilter.runFilter(outputSummaryText);
 		outputSummaryText = patchFilter.getOutputText();
 		
