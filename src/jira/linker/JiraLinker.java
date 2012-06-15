@@ -16,9 +16,7 @@ import db.LinkerDb;
  * <p>
  * This will serve as the controller class for Linking commits to Items.
  * </p>
- * 
  * @author braden
- * 
  */
 public class JiraLinker extends Linker
 {
