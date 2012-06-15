@@ -42,6 +42,13 @@ public class EmailLinker extends Linker
 				}
 			}
 		}
+		
+		// Insert the links
+		if(!links.isEmpty()) {
+			for(models.Link link: links) {
+				comDb.insertLink(link);
+			}
+		}
 	}
 	
 	private boolean matchCommitToPerson(Commit commit, Person person) {
