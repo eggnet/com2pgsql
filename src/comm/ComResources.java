@@ -30,5 +30,7 @@ public class ComResources extends Resources
 	public static final int JIRA_MAX_RESULTS = 50;
 	public static int DB_LIMIT = 2000;
 	
-	public static int COMMIT_DATE_MAX_RANGE = 7;
+	public static final int COMMIT_DATE_MAX_RANGE = 7;
+	
+	public static final float STRING_MATCHING_THRESHOLD = 0.4f;
 }

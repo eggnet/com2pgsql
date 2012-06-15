@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import comm.ComResources;
+
 import db.ComDb;
 import db.LinkerDb;
 import linker.Linker;
@@ -79,7 +81,7 @@ public class EmailLinker extends Linker
 		return confidence;
 	}
 	
-	public String findSnippetFile(String snippet, Timestamp date) {
+	public String findSnippetFile(String snippet, Timestamp date, boolean exactMatchOnly) {
 		Commit commit = linkerDb.getCommitAroundDate(date);
 		List<CommitFamily> commits = linkerDb.getCommitPathToRoot(commit.getCommit_id());
 		List<CommitFamily> path = reversePath(commits);
@@ -97,11 +99,24 @@ public class EmailLinker extends Linker
 			files.removeAll(linkerDb.getFilesDeleted(commitF.getChildId()));
 		}
 		
-		// Look for snippet in all the files
-		for(String file: files) {
-			String rawFile = linkerDb.getRawFileFromDiffTree(file, commit.getCommit_id());
-			if(rawFile.contains(snippet))
-				return file;
+		// Look for snippet in all the files using exact matches
+		if(exactMatchOnly) {
+			for(String file: files) {
+				String rawFile = linkerDb.getRawFileFromDiffTree(file, commit.getCommit_id());
+				if(rawFile.contains(snippet))
+					return file;
+			}
+		}
+		// Look for snippet in all the files using substring matching and cut off
+		else {
+			for(String file: files) {
+				String rawFile = linkerDb.getRawFileFromDiffTree(file, commit.getCommit_id());
+				int match = longestSubstr(file, snippet);
+				float matchPercent = (float)((float)match/(float)snippet.length());
+				
+				if(matchPercent > ComResources.STRING_MATCHING_THRESHOLD)
+					return file;
+			}
 		}
 		
 		return null;
@@ -114,5 +129,32 @@ public class EmailLinker extends Linker
 			returnPath.add(0, CF);
 		
 		return returnPath;
+	}
+	
+	private int longestSubstr(String first, String second) {
+	    if (first == null || second == null || first.length() == 0 || second.length() == 0)
+	        return 0;
+	 
+	    int maxLen = 0;
+	    int fl = first.length();
+	    int sl = second.length();
+	    int[][] table = new int[fl][sl];
+	 
+	    for (int i = 0; i < fl; i++) {
+	        for (int j = 0; j < sl; j++) {
+	            if (first.charAt(i) == second.charAt(j)) {
+	                if (i == 0 || j == 0) {
+	                    table[i][j] = 1;
+	                }
+	                else {
+	                    table[i][j] = table[i - 1][j - 1] + 1;
+	                }
+	                if (table[i][j] > maxLen) {
+	                    maxLen = table[i][j];
+	                }
+	            }
+	        }
+	    }
+	    return maxLen;
 	}
 }
