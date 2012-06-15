@@ -29,4 +29,6 @@ public class ComResources extends Resources
 	public static final Pattern KEYWORDS_REGEX = Pattern.compile("^$"); // TODO @braden waiting on the JAR from adrian
 	public static final int JIRA_MAX_RESULTS = 50;
 	public static int DB_LIMIT = 2000;
+	
+	public static int COMMIT_DATE_MAX_RANGE = 7;
 }
