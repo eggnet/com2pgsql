@@ -10,7 +10,9 @@
  */
 package models.extractor.sourcecode;
 
-public class CodeRegion implements Comparable<CodeRegion>
+import models.Extraction;
+
+public class CodeRegion extends Extraction implements Comparable<CodeRegion>
 {
 	public int		start	= 0;
 

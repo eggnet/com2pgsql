@@ -13,11 +13,14 @@ package models.extractor.stacktrace;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StackTrace
+import models.Extraction;
+
+public class StackTrace extends Extraction
 {
 	private String			exception;
 	private String			reason;
 	private List<String>	frames;
+	private List<String>	filenames;
 	private boolean			isCause;
 	private int				traceStart;
 	private int				traceEnd;
@@ -61,6 +64,17 @@ public class StackTrace
 		this.frames = frames;
 		this.isCause = false;
 	}
+	
+	public StackTrace(String exception, String reason, List<String> frames, List<String> files)
+	{
+		this.traceStart = 0;
+		this.traceEnd = 0;
+		this.exception = exception;
+		this.reason = reason;
+		this.frames = frames;
+		this.filenames = files;
+		this.isCause = false;
+	}
 
 	public StackTrace(String exception, String reason)
 	{
@@ -91,6 +105,16 @@ public class StackTrace
 		return this.frames;
 	}
 
+	public List<String> getFilenames()
+	{
+		return this.filenames;
+	}
+	
+	public void setFilenames(List<String> filenames)
+	{
+		this.filenames = filenames;
+	}
+	
 	public void setCause(boolean isCause)
 	{
 		this.isCause = isCause;

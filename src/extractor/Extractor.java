@@ -1,10 +1,12 @@
 package extractor;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import comm.ComResources;
 import comm.RegExHelper;
@@ -64,58 +66,48 @@ public class Extractor
 		FilterStackTraceJAVA stacktraceFilter = new FilterStackTraceJAVA();
 		FilterSourceCodeJAVA sourcecodeFilter = new FilterSourceCodeJAVA(ComResources.class.getResource("Java_CodeDB.txt"));
 
-		String inputSummaryText = item.getTitle();
-		String inputBodyText = item.getBody();
-		String outputSummaryText = "";
-		String outputBodyText = "";
-		
-		List<Patch> patches;
-		List<StackTrace> traces;
-		List<CodeRegion> regions;
-		
-
 		List<Extraction> keys = new LinkedList<Extraction>();
 
-		// First search through the title.
-		List<Extraction> titleKeys = matchSHA1(item.getTitle(), item.getItemDate());
-		titleKeys.addAll(matchKeywords(item.getTitle(), item.getItemDate()));
-
-		inputSummaryText = RegExHelper.makeLinuxNewlines(inputSummaryText);
-		outputSummaryText = inputSummaryText;
-		
-		
-		
-		patches = patchFilter.runFilter(outputSummaryText);
-		outputSummaryText = patchFilter.getOutputText();
-		
-		traces = stacktraceFilter.runFilter(outputSummaryText);
-		outputSummaryText = stacktraceFilter.getOutputText();
-		
-		regions = sourcecodeFilter.runFilter(outputSummaryText);
-		outputSummaryText = stacktraceFilter.getOutputText();
-		
-		// Now the body
-		List<Extraction> bodyKeys = matchSHA1(item.getTitle(), item.getItemDate());
-
-		inputBodyText = RegExHelper.makeLinuxNewlines(inputBodyText);
-		outputBodyText = inputBodyText;
-		
-		patches = patchFilter.runFilter(outputBodyText);
-		outputBodyText = patchFilter.getOutputText();
-		
-		traces = stacktraceFilter.runFilter(outputBodyText);
-		outputBodyText = stacktraceFilter.getOutputText();
-		
-		regions = sourcecodeFilter.runFilter(outputBodyText);
-		outputBodyText = stacktraceFilter.getOutputText();
-		
-		bodyKeys.addAll(matchKeywords(item.getTitle(), item.getItemDate()));
-
-		keys.addAll(titleKeys);
-		keys.addAll(bodyKeys);
+		keys.addAll(extractItemBody(item, patchFilter, stacktraceFilter, sourcecodeFilter));
+		keys.addAll(extractItemSummary(item));
 		return keys;
 	}
 
+	public List<Extraction> extractItemSummary(Item item)
+	{
+		List<Extraction> titleKeys = new ArrayList<Extraction>();
+		titleKeys.addAll(matchSHA1(item.getBody(), item.getItemDate()));
+		titleKeys.addAll(matchBugNumber(item.getBody(), item.getItemDate()));
+		titleKeys.addAll(matchKeywords(item.getBody(), item.getItemDate()));
+		return titleKeys;
+	}
+	
+	public List<Extraction> extractItemBody(Item item, FilterPatches patchFilter, FilterStackTraceJAVA stacktraceFilter, FilterSourceCodeJAVA sourcecodeFilter)
+	{
+		List<Extraction> bodyKeys = matchSHA1(item.getTitle(), item.getItemDate());
+
+		// get the links, keywords, and commit ids
+		bodyKeys.addAll(matchSHA1(item.getBody(), item.getItemDate()));
+		bodyKeys.addAll(matchBugNumber(item.getBody(), item.getItemDate()));
+		bodyKeys.addAll(matchKeywords(item.getBody(), item.getItemDate()));
+		
+		String outputBodyText = RegExHelper.makeLinuxNewlines(item.getBody());
+		
+		List<Patch> patches = patchFilter.runFilter(outputBodyText);
+		outputBodyText = patchFilter.getOutputText();
+		
+		List<StackTrace> traces = stacktraceFilter.runFilter(outputBodyText);
+		outputBodyText = stacktraceFilter.getOutputText();
+		
+		List<CodeRegion> regions = sourcecodeFilter.runFilter(outputBodyText);
+		outputBodyText = stacktraceFilter.getOutputText();
+		
+		bodyKeys.addAll(traces);
+		bodyKeys.addAll(regions);
+		bodyKeys.addAll(patches);
+		return bodyKeys;
+	}
+	
 	/**
 	 * Extracts the technical information from the given {@link models.Issue}
 	 * and parses it into <br>

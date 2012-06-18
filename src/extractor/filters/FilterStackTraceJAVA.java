@@ -85,7 +85,8 @@ public class FilterStackTraceJAVA implements IFilter
 		String exception = "";
 		String reason = "";
 		List foundFrames = new ArrayList();
-
+		List<String> foundFiles = new ArrayList<String>();
+		
 //		String traceException = "(([\\w<>\\$_]+\\.)+[\\w<>\\$_]+(Error|Exception){1})(.*?)(at\\s+([\\w<>\\$_\n\r]+\\.)+[\\w<>\\$_\n\r]+\\s*\\(.+?\\.java(:)?(\\d+)?\\)(\\s*?at\\s+([\\w<>\\$_\\s]+\\.)+[\\w<>\\$_\\s]+\\s*\\(.+?\\.java(:)?(\\d+)?\\))*)";
 		Pattern tracePattern = Pattern.compile(JAVA_STACKTRACE, 40);
 
@@ -104,13 +105,27 @@ public class FilterStackTraceJAVA implements IFilter
 			{
 				foundFrames.add(framesMatch.group(2).replaceAll("[\n\r]", ""));
 			}
+			
+			Pattern filenamePattern = Pattern.compile("(\\n(\\()(([\\w<>\\$_])+\\.java))(:?[0-9]*)?\\)", 40);
+			for (MatchResult filesMatch : RegExHelper.findMatches(filenamePattern, stackTraceMatchGroup))
+			{
+				foundFiles.add(filesMatch.group(3));
+			}
+			
 		}
-		StackTrace trace = new StackTrace(exception, reason, foundFrames);
+		StackTrace trace = new StackTrace(exception, reason, foundFrames, foundFiles);
 		trace.setCause(false);
 
 		return trace;
 	}
 
+//	private List<String> getFileNameFromStackTrace(StackTrace st)
+//	{
+//		List<String> filenames = new ArrayList<String>();
+//		
+//		for (Matcher m = filenamePattern.matcher(st.))
+//	}
+	
 	private List<StackTrace> getStackTraces(CharSequence inputSequence)
 	{
 		List stackTraces = new ArrayList();

@@ -16,7 +16,9 @@ import java.util.List;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
-public class Patch
+import models.Extraction;
+
+public class Patch extends Extraction
 {
 	private String			index			= "";
 	private String			originalFile	= "";

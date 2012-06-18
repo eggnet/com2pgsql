@@ -1,12 +1,9 @@
 package comm;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.InputStreamReader;
-import java.util.List;
 
 import jira.Jira;
-import linker.Linker;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -16,8 +13,6 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
 import bugzilla.Bugzilla;
-import bugzilla.linker.BugzillaLinker;
-
 import db.ComDb;
 import db.LinkerDb;
 import db.Resources;
