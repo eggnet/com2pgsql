@@ -2,8 +2,11 @@ package linker;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import models.Commit;
 import models.CommitFamily;
@@ -23,6 +26,16 @@ import models.extractor.sourcecode.CodeRegion;
 
 public abstract class Linker
 {
+	public class LinkedExtraction {
+		public float Confidence;
+		public Commit commit;
+		public LinkedExtraction(float confidence, Commit commit)
+		{
+			this.Confidence = confidence;
+			this.commit = commit;
+		}
+	}
+	
 	protected ComDb		comDb;
 	protected LinkerDb	linkerDb;
 	protected Extractor extractor;
@@ -62,7 +75,8 @@ public abstract class Linker
 				
 				if (extraction instanceof StackTrace)
 				{
-					//TODO @bradens
+					Set<LinkedExtraction> relevantCommitsByFiles = GetRelevantCommitsForFiles(((StackTrace) extraction).getFilenames(), i.getItemDate());
+					Resources.log("%i", relevantCommitsByFiles.size());
 				}
 				else if (extraction instanceof CodeRegion)
 				{
@@ -74,6 +88,32 @@ public abstract class Linker
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Returns a list of commits and their confidence that are linked to a given extraction by 
+	 * the files given from that extraction.  Uses algorithm (matchCount / totalChangedFiles) to get confidence
+	 * @param filenames
+	 * @param date
+	 * @return
+	 */
+	public Set<LinkedExtraction> GetRelevantCommitsForFiles(List<String> filenames, Timestamp date)
+	{
+		Set<LinkedExtraction> results = new HashSet<LinkedExtraction>();
+		List<Commit> commitsAroundItem = linkerDb.getCommitsAroundDate(date);
+		for (Commit commit : commitsAroundItem)
+		{
+			Resources.log("Trying to link %i files", commitsAroundItem.size());
+			List<String> filesChangedAtCommit = linkerDb.getFilesChangedOnCommit(commit);
+			int matchCount = 0;
+			for (String fileInExtraction: filenames)
+			{
+				if (filesChangedAtCommit.contains(fileInExtraction))
+					matchCount++;
+			}
+			results.add(new LinkedExtraction((matchCount / filesChangedAtCommit.size()), commit));
+		}
+		return results;
 	}
 	
 	/**
