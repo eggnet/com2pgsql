@@ -68,12 +68,14 @@ public class Extractor
 
 		List<Extraction> keys = new LinkedList<Extraction>();
 
-		keys.addAll(extractItemBody(item, patchFilter, stacktraceFilter, sourcecodeFilter));
-		keys.addAll(extractItemSummary(item));
+		if (item.getBody() != null)
+			keys.addAll(extractItemBody(item, patchFilter, stacktraceFilter, sourcecodeFilter));
+		if (item.getTitle() != null)
+			keys.addAll(extractItemSummary(item));
 		return keys;
 	}
 
-	public List<Extraction> extractItemSummary(Item item)
+	private List<Extraction> extractItemSummary(Item item)
 	{
 		List<Extraction> titleKeys = new ArrayList<Extraction>();
 		titleKeys.addAll(matchSHA1(item.getBody(), item.getItemDate()));
@@ -82,9 +84,9 @@ public class Extractor
 		return titleKeys;
 	}
 	
-	public List<Extraction> extractItemBody(Item item, FilterPatches patchFilter, FilterStackTraceJAVA stacktraceFilter, FilterSourceCodeJAVA sourcecodeFilter)
+	private List<Extraction> extractItemBody(Item item, FilterPatches patchFilter, FilterStackTraceJAVA stacktraceFilter, FilterSourceCodeJAVA sourcecodeFilter)
 	{
-		List<Extraction> bodyKeys = matchSHA1(item.getTitle(), item.getItemDate());
+		List<Extraction> bodyKeys = matchSHA1(item.getBody(), item.getItemDate());
 
 		// get the links, keywords, and commit ids
 		bodyKeys.addAll(matchSHA1(item.getBody(), item.getItemDate()));
@@ -118,6 +120,9 @@ public class Extractor
 	 */
 	public List<Extraction> ExtractKeys(Issue issue)
 	{
+		
+		// TODO @braden FIXME this needs fixing to be similar to #ExtractKeys(Item item)
+		
 		// get all item keys.
 		List<Extraction> keys = new LinkedList<Extraction>();
 

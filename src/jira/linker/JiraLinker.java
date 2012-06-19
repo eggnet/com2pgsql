@@ -20,6 +20,7 @@ import db.LinkerDb;
  */
 public class JiraLinker extends Linker
 {
+	
 	public JiraLinker(ComDb comDb, LinkerDb linkerDb)
 	{
 		super(comDb, linkerDb);
@@ -27,7 +28,7 @@ public class JiraLinker extends Linker
 
 	@Override
 	public void Link()
-	{
+	{	
 		// -------------------------------------------------------------------------------------
 		// Do the first pass of linking commits -> issues via commit messages
 		// and bug numbers
@@ -35,9 +36,14 @@ public class JiraLinker extends Linker
 		LinkFromCommitMessages();
 		
 		// -------------------------------------------------------------------------------------
-		// Now get try to link items -> commits
+		// Now get try to link items -> commits by using commitID's
 		// -------------------------------------------------------------------------------------
-		LinkFromThreadItems();
+		//LinkFromIssueThreadItems();
+		
+		// -------------------------------------------------------------------------------------
+		// Now get try to link items -> commits by using the item's data.
+		// -------------------------------------------------------------------------------------
+		LinkFromItems();
 	}
 
 	@Override
@@ -61,7 +67,7 @@ public class JiraLinker extends Linker
 			}
 		}
 	}
-
+	
 	public Set<String> getBugNumbers(Commit c)
 	{
 		Set<String> bugNumbers = new HashSet<String>();

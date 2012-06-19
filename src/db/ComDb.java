@@ -20,6 +20,7 @@ import models.Link;
 import models.Person;
 import models.Silent;
 
+import comm.ComResources;
 import comm.ComResources.CommType;
 
 public class ComDb extends DbConnection
@@ -343,6 +344,39 @@ public class ComDb extends DbConnection
 			return issues;
 		}
 		catch(SQLException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Gets a list of all Non-Issue items
+	 * @return
+	 */
+	public List<Item> getAllItems()
+	{
+		List<Item> items = new ArrayList<Item>();
+		try
+		{
+			String sql = "SELECT p_id, item_date, item_id, body, title, type from items where type != 'ISSUE';";
+			String[] parms = {};
+			ResultSet rs = execPreparedQuery(sql, parms);
+			while(rs.next())
+			{
+				Item i = new Item(
+						rs.getInt("p_id"),
+						rs.getTimestamp("item_date"),
+						rs.getInt("item_id"),
+						rs.getString("body"),
+						rs.getString("title"),
+						ComResources.CommType.valueOf(rs.getString("type"))
+				);
+				items.add(i);
+			}
+			return items; 
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 			return null;

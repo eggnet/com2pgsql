@@ -25,9 +25,9 @@ public class FilterStackTraceJAVA implements IFilter
 {
 	private FilterTextRemover	textRemover;
 	
-	public static String		JAVA_EXCEPTION			= "\\n(([\\w<>\\$_]+\\.?)+[\\w<>\\$_]*(Exception|Error){1}(\\s|:))";
-	public static String		JAVA_REASON				= "(:?.*?)(at\\s+([\\w<>\\$_]+\\.)+[\\w<>\\$_]+\\s*)\\(.+?\\.java(:)?(\\d+)?\\)";
-	public static String		JAVA_TRACE				= "((\\s*?at\\s+([\\w<>\\$_]+\\.)+[\\w<>\\$_]+\\s*\\(.+?\\.java(:)?(\\d+)?\\))*)\\s*?(at\\s+([\\w<>\\$_]+\\.)+[\\w<>\\$_]+\\s)";
+	public static String		JAVA_EXCEPTION			= "\\n(([\\w<>\\$_]++\\.?)++[\\w<>\\$_]*+(Exception|Error){1}(\\s|:))";
+	public static String		JAVA_REASON				= "(:?.*?)(at\\s++([\\w<>\\$_]++\\.)++[\\w<>\\$_]++\\s*+)\\(.+?\\.java(:)?(\\d++)?\\)";
+	public static String		JAVA_TRACE				= "((\\s*?at\\s++([\\w<>\\$_]+\\.)++[\\w<>\\$_]++\\s*+\\(.+?\\.java(:)?(\\d++)?\\))*)\\s*?(at\\s++([\\w<>\\$_]++\\.)++[\\w<>\\$_]++\\s)";
 	public static String		JAVA_CAUSE				= "(Caused by:).*?(Exception|Error)(.*?)(\\s+at.*?\\(.*?:\\d+\\))+";
 	public static String		JAVA_STACKTRACE			= JAVA_EXCEPTION + JAVA_REASON + JAVA_TRACE;
 	private static Pattern		pattern_stacktrace_java	= Pattern.compile(JAVA_STACKTRACE, 40);

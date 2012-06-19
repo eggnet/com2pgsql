@@ -7,6 +7,7 @@ import java.util.List;
 
 import models.Commit;
 import models.CommitFamily;
+import models.Extraction;
 import models.Issue;
 import models.Item;
 
@@ -14,16 +15,23 @@ import comm.ComResources;
 
 import db.ComDb;
 import db.LinkerDb;
+import db.Resources;
+import extractor.Extractor;
+import models.extractor.stacktrace.StackTrace;
+import models.extractor.patch.Patch;
+import models.extractor.sourcecode.CodeRegion;
 
 public abstract class Linker
 {
 	protected ComDb		comDb;
 	protected LinkerDb	linkerDb;
+	protected Extractor extractor;
 
 	public Linker(ComDb comDb, LinkerDb linkerDb)
 	{
 		this.comDb = comDb;
 		this.linkerDb = linkerDb;
+		this.extractor = new Extractor();
 	}
 	
 	/**
@@ -38,12 +46,43 @@ public abstract class Linker
 	public void LinkFromCommitMessages() { }
 	
 	/**
+	 * <p>Links {@link models.Item} to {@link models.Commit} by parsing through the data
+	 * <br> in the Item's body and Summary to give {@link models.Extraction} objects that
+	 * <br> can be linked to Commits.</p>
+	 */
+	public void LinkFromItems() 
+	{
+		List<Item> items = comDb.getAllItems();
+		for(Item i : items)
+		{
+			List<Extraction> keys = extractor.ExtractKeys(i);
+			for (Extraction extraction : keys)
+			{
+				Resources.log(extraction.getClass().toString());
+				
+				if (extraction instanceof StackTrace)
+				{
+					//TODO @bradens
+				}
+				else if (extraction instanceof CodeRegion)
+				{
+					//TODO @bradens
+				}
+				else if (extraction instanceof Patch)
+				{
+					//TODO @bradens
+				}
+			}
+		}
+	}
+	
+	/**
 	 * <p>Links {@link models.Item} to {@link models.Issue} by parsing the date of the item<br>
 	 * and the date of commits linked to the Item's thread.  Then after finding a 'correct'<br>
 	 * commit, the item->commit link get's placed in the {@link db.LinkerDb}.  This algorithm <br>
 	 * is only performed on the items that are children of threads.<p>
 	 */
-	public void LinkFromThreadItems() { 
+	public void LinkFromIssueThreadItems() { 
 		int offset = 0;
 		List<Issue> issues = comDb.getIssues(ComResources.DB_LIMIT, offset);
 		
