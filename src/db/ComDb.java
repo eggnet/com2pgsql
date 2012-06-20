@@ -22,6 +22,10 @@ import models.Silent;
 
 import comm.ComResources;
 import comm.ComResources.CommType;
+import db.util.ISetter;
+import db.util.ISetter.StringSetter;
+import db.util.ISetter.IntSetter;
+import db.util.PreparedStatementExecutionItem;
 
 public class ComDb extends DbConnection
 {
@@ -42,18 +46,22 @@ public class ComDb extends DbConnection
 		PreparedStatement s;
 		try {
 			// Drop the DB if it already exists
-			s = conn.prepareStatement("DROP DATABASE IF EXISTS " + dbName + ";");
-			s.execute();
+			String query = "DROP DATABASE IF EXISTS " + dbName + ";";
+			PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(query, null);
+			addExecutionItem(ei);
+			ei.waitUntilExecuted();
 			
 			// First create the DB.
-			s = conn.prepareStatement("CREATE DATABASE " + dbName + ";");
-			s.execute();
+			query = "CREATE DATABASE " + dbName + ";";
+			ei = new PreparedStatementExecutionItem(query, null);
+			addExecutionItem(ei);
+			ei.waitUntilExecuted();
 			
 			// Reconnect to our new database.
 			connect(dbName.toLowerCase());
 			
 			// Now load our default schema in.
-			sr.runScript(new InputStreamReader(this.getClass().getResourceAsStream("createdb.sql")));
+			runScript(new InputStreamReader(this.getClass().getResourceAsStream("createdb.sql")));
 			return true;
 		}
 		catch (Exception e)
@@ -64,24 +72,18 @@ public class ComDb extends DbConnection
 	}
 	
 	public int insertItem(Item item) {
-		try 
-		{
-			PreparedStatement s = conn.prepareStatement(
-					"INSERT INTO items (p_id, item_date, item_id, body, title, type) VALUES " +
-					"(" + item.getPId() + ", ?::timestamp, default, ?, ?, ?)");
-			s.setString(1, item.getItemDate().toString());
-			s.setString(2, item.getBody());
-			s.setString(3, item.getTitle());
-			s.setString(4, item.getCommunicationType().toString());
-			s.execute();
-			
-			return getSequenceValue("items_id_seq"); 
-		}
-		catch(SQLException e) 
-		{
-			e.printStackTrace();
-			return -1;
-		}
+		String query = "INSERT INTO items (p_id, item_date, item_id, body, title, type) VALUES " +
+				"(" + item.getPId() + ", ?::timestamp, default, ?, ?, ?)";
+		ISetter[] params = {
+				new StringSetter(1,item.getItemDate().toString()),
+				new StringSetter(2,item.getBody()),
+				new StringSetter(3,item.getTitle()),
+				new StringSetter(4,item.getCommunicationType().toString())
+		};
+		PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(query, params);
+		addExecutionItem(ei);
+		ei.waitUntilExecuted();
+		return getSequenceValue("items_id_seq"); 
 	}
 	
 	public int insertPerson(Person person) {
@@ -93,12 +95,15 @@ public class ComDb extends DbConnection
 			ResultSet rs = execPreparedQuery(sql, parms);
 			if(!rs.next()) {
 				// Insert
-				PreparedStatement s = conn.prepareStatement(
-						"INSERT INTO people (p_id, name, email) VALUES " +
-						"(default, ?, ?)");
-				s.setString(1, person.getName());
-				s.setString(2, person.getEmail());
-				s.execute();
+				String query = "INSERT INTO people (p_id, name, email) VALUES " +
+						"(default, ?, ?)";
+				ISetter[] params = {
+						new StringSetter(1, person.getName()),
+						new StringSetter(2, person.getEmail())
+				};
+				PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(query, params);
+				addExecutionItem(ei);
+				ei.waitUntilExecuted();
 
 				return getSequenceValue("people_id_seq");
 			}
@@ -122,111 +127,74 @@ public class ComDb extends DbConnection
 	}
 	
 	public boolean insertThread(models.Thread thread) {
-		try 
-		{
-			PreparedStatement s = conn.prepareStatement(
-					"INSERT INTO threads (item_id, thread_id) VALUES " +
-					"(" + thread.getItemID() + ", " + thread.getThreadID() + ")");
-			s.execute();
-		}
-		catch(SQLException e) 
-		{
-			e.printStackTrace();
-			return false;
-		}
+		String query = "INSERT INTO threads (item_id, thread_id) VALUES " +
+				"(" + thread.getItemID() + ", " + thread.getThreadID() + ")";
+		PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(query, null);
+		ei.waitUntilExecuted();
 		return true;
 	}
 	
 	public boolean insertLink(Link link) {
-		try 
-		{
-			PreparedStatement s = conn.prepareStatement(
-					"INSERT INTO links (item_id, commit_id, confidence) VALUES " +
-					"(" + link.getItemID() + ", ?, " + link.getConfidence() + ")");
-			s.setString(1, link.getCommitID());
-			s.execute();
-		}
-		catch(SQLException e) 
-		{
-			e.printStackTrace();
-			return false;
-		}
+		String query = "INSERT INTO links (item_id, commit_id, confidence) VALUES " +
+					"(" + link.getItemID() + ", ?, " + link.getConfidence() + ")";
+		ISetter[] params = {new StringSetter(1,link.getCommitID())};
+		PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(query, params);
+		addExecutionItem(ei);
+		ei.waitUntilExecuted();
 		return true;
 	}
 	
 	public boolean insertIssue(Issue issue) {
-		try 
-		{
-			PreparedStatement s = conn.prepareStatement(
-					"INSERT INTO issues (item_id, status, assignee_id, creation_ts, last_modified_ts, " +
-					"title, description, creator_id, keywords, issue_num) VALUES " +
-					"(" + issue.getItemID() + ", ?, " + issue.getAssignedID() + ", ?::timestamp, ?::timestamp, ?, ?, " +
-					issue.getCreatorID() + ", ?, ?)");
-			s.setString(1, issue.getStatus());
-			s.setString(2, issue.getCreationTS().toString());
-			s.setString(3, issue.getLastModifiedTS().toString());
-			s.setString(4, issue.getTitle());
-			s.setString(5, issue.getDescription());
-			s.setString(6, issue.getKeywords());
-			s.setString(7, issue.getIssueNum());
-			s.execute();
-		}
-		catch(SQLException e) 
-		{
-			e.printStackTrace();
-			return false;
-		}
+		String query = "INSERT INTO issues (item_id, status, assignee_id, creation_ts, last_modified_ts, " +
+				"title, description, creator_id, keywords, issue_num) VALUES " +
+				"(" + issue.getItemID() + ", ?, " + issue.getAssignedID() + ", ?::timestamp, ?::timestamp, ?, ?, " +
+				issue.getCreatorID() + ", ?, ?)";
+		ISetter[] params = {
+				new StringSetter(1, issue.getStatus()),
+				new StringSetter(2, issue.getCreationTS().toString()),
+				new StringSetter(3, issue.getLastModifiedTS().toString()),
+				new StringSetter(4, issue.getTitle()),
+				new StringSetter(5, issue.getDescription()),
+				new StringSetter(6, issue.getKeywords()),
+				new StringSetter(7, issue.getIssueNum())
+		};
+		PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(query, params);
+		addExecutionItem(ei);
+		ei.waitUntilExecuted();
 		return true;
 	}
 	
 	public boolean insertSilent(Silent silent) {
-		try 
-		{
-			PreparedStatement s = conn.prepareStatement(
-					"INSERT INTO silents (p_id, item_id) VALUES " +
-					"(" + silent.getpID() + ", " + silent.getItemID() + ")");
-			s.execute();
-		}
-		catch(SQLException e) 
-		{
-			e.printStackTrace();
-			return false;
-		}
+		String query = "INSERT INTO silents (p_id, item_id) VALUES " +
+					"(" + silent.getpID() + ", " + silent.getItemID() + ")";
+		PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(query, null);
+		addExecutionItem(ei);
+		ei.waitUntilExecuted();
 		return true;
 	}
 	
 	public boolean insertAttachment(Attachment attachment) {
-		try 
-		{
-			PreparedStatement s = conn.prepareStatement(
-					"INSERT INTO attachments (item_id, title, body) VALUES " +
-					"(" + attachment.getItemID() + ", ?, ?)");
-			s.setString(1, attachment.getTitle());
-			s.setString(2, attachment.getBody());
-			s.execute();
-		}
-		catch(SQLException e) 
-		{
-			e.printStackTrace();
-			return false;
-		}
+		String query = "INSERT INTO attachments (item_id, title, body) VALUES " +
+					"(" + attachment.getItemID() + ", ?, ?)";
+		ISetter[] params = {
+				new StringSetter(1,attachment.getTitle()),
+				new StringSetter(2,attachment.getBody())
+		};
+		PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(query, params);
+		addExecutionItem(ei);
+		ei.waitUntilExecuted();
 		return true;
 	}
 	
-	public boolean insertDependency(Dependency dependency)
-	{
-		try {
-			PreparedStatement s = conn.prepareStatement(
-					"INSERT INTO dependencies (item_id, depends_on_id) VALUES (?, ?)");
-			s.setInt(1, dependency.getItemID());
-			s.setInt(2, dependency.getDependsOnID());
-			s.execute();
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			return false;
-		}
+	public boolean insertDependency(Dependency dependency) {
+		String query = "INSERT INTO dependencies (item_id, depends_on_id) VALUES (?, ?)";
+		ISetter[] params = {
+			new IntSetter(1, dependency.getItemID()),
+			new IntSetter(2, dependency.getDependsOnID())
+		};
+		PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(query, params);
+		addExecutionItem(ei);
+		ei.waitUntilExecuted();
 		return true;
 	}
 	
@@ -406,6 +374,8 @@ public class ComDb extends DbConnection
 	
 	public void deleteLinks() {
 		String sql = "DELETE FROM links;";
-		exec(sql);
+		PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(sql, null);
+		addExecutionItem(ei);
+		ei.waitUntilExecuted();
 	}
 }
