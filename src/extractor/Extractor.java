@@ -80,7 +80,6 @@ public class Extractor
 		List<Extraction> titleKeys = new ArrayList<Extraction>();
 		titleKeys.addAll(matchSHA1(item.getBody(), item.getItemDate()));
 		titleKeys.addAll(matchBugNumber(item.getBody(), item.getItemDate()));
-		titleKeys.addAll(matchKeywords(item.getBody(), item.getItemDate()));
 		return titleKeys;
 	}
 	
@@ -91,7 +90,6 @@ public class Extractor
 		// get the links, keywords, and commit ids
 		bodyKeys.addAll(matchSHA1(item.getBody(), item.getItemDate()));
 		bodyKeys.addAll(matchBugNumber(item.getBody(), item.getItemDate()));
-		bodyKeys.addAll(matchKeywords(item.getBody(), item.getItemDate()));
 		
 		String outputBodyText = RegExHelper.makeLinuxNewlines(item.getBody());
 		
@@ -129,11 +127,9 @@ public class Extractor
 		// First search through the title.
 		List<Extraction> titleKeys = matchSHA1(issue.getTitle(), issue.getCreationTS());
 		titleKeys.addAll(matchBugNumber(issue.getTitle(), issue.getCreationTS()));
-		titleKeys.addAll(matchKeywords(issue.getTitle(), issue.getCreationTS()));
 
 		List<Extraction> bodyKeys = matchSHA1(issue.getDescription(), issue.getCreationTS());
 		bodyKeys.addAll(matchBugNumber(issue.getDescription(), issue.getCreationTS()));
-		bodyKeys.addAll(matchKeywords(issue.getDescription(), issue.getCreationTS()));
 
 		keys.addAll(titleKeys);
 		keys.addAll(bodyKeys);
@@ -144,15 +140,6 @@ public class Extractor
 	{
 		List<Extraction> extractions = new LinkedList<Extraction>();
 		Matcher matcher = ComResources.BUG_NUMBER_REGEX.matcher(input);
-		while (matcher.find())
-			extractions.add(new Extraction(TextType.COMMITID, matcher.group(), timestamp));
-		return extractions;
-	}
-
-	private List<Extraction> matchKeywords(String input, Timestamp timestamp)
-	{
-		List<Extraction> extractions = new LinkedList<Extraction>();
-		Matcher matcher = ComResources.KEYWORDS_REGEX.matcher(input);
 		while (matcher.find())
 			extractions.add(new Extraction(TextType.COMMITID, matcher.group(), timestamp));
 		return extractions;

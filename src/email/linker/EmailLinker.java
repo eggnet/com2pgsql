@@ -38,7 +38,7 @@ public class EmailLinker extends Linker
 					models.Link link = new models.Link(item.getItemId(), commit.getCommit_id(), 0.0f);
 					
 					// Get confidence up if possible
-					List<String> filesChanged = linkerDb.getFilesChangedOnCommit(commit);
+					List<String> filesChanged = linkerDb.getFilesPathChangedOnCommit(commit);
 					link.setConfidence(fileMatchConfidence(files, filesChanged));
 					
 					// Insert

@@ -2,6 +2,7 @@ package test;
 
 import java.sql.Timestamp;
 
+import models.Commit;
 import models.Issue;
 import models.Item;
 
@@ -15,7 +16,7 @@ public class TestData
 			 "java.lang.Exception" +
 			 "\n\tat java.lang.Throwable.<init>(Throwable.java)" +
 			 "\n\tat org.eclipse.ui.actions.DeleteResourceAction.delete" +
-			 "\n(DeleteResourceAction.java:325)" +
+			 "\n(Ejb3Configuration.java:325)" +
 			 "\n\tat org.eclipse.ui.actions.DeleteResourceAction.access$0" +
 			 "\n(DeleteResourceAction.java:305)" +
 			 "\n\tat org.eclipse.ui.actions.DeleteResourceAction$2.execute" +
@@ -27,8 +28,8 @@ public class TestData
 			 "\n\tat org.eclipse.ui.actions.WorkspaceModifyOperation.run ..." +
 			 "\n and here is some more text",
 	         "This is a body with a commit id inside of it 67f57daf7583b7f5edff91d975c9dd3702ba1330.",
-	         Timestamp.valueOf("2008-04-28 18:53:28")); 
-	
+	         Timestamp.valueOf("2009-04-21 13:15:48")); 
+		
 	public Item CodeRegionItem = createDummyItem(
 			"When using tabs to format, they should be used only for leading indents and" + 
 			"\nnot to line up columns of parameters. For example:" +

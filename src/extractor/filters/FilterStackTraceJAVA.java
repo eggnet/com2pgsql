@@ -54,6 +54,7 @@ public class FilterStackTraceJAVA implements IFilter
 		String exception = "";
 		String reason = "";
 		List foundFrames = new ArrayList();
+		List<String> foundFiles = new ArrayList<String>();
 
 		String causeException = "(Caused by:)(.*?(Error|Exception){1})(.*?)(at\\s+([\\w<>\\$_\n\r]+\\.)+[\\w<>\\$_\n\r]+\\s*\\(.+?\\.java(:)?(\\d+)?\\)(\\s*?at\\s+([\\w<>\\$_\\s]+\\.)+[\\w<>\\$_\\s]+\\s*\\(.+?\\.java(:)?(\\d+)?\\))*)";
 		Pattern causeEPattern = Pattern.compile(causeException, 40);
@@ -73,8 +74,13 @@ public class FilterStackTraceJAVA implements IFilter
 			{
 				foundFrames.add(framesMatch.group(2).replaceAll("[\n\r]", ""));
 			}
+			Pattern filenamePattern = Pattern.compile("(\\()(([\\w<>\\$_])+\\.java)(:?[0-9]*)?\\)", 40);
+			for (MatchResult filesMatch : RegExHelper.findMatches(filenamePattern, stackTraceMatchGroup))
+			{
+				foundFiles.add(filesMatch.group(2));
+			}
 		}
-		StackTrace trace = new StackTrace(exception, reason, foundFrames);
+		StackTrace trace = new StackTrace(exception, reason, foundFrames, foundFiles);
 		trace.setCause(true);
 
 		return trace;

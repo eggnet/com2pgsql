@@ -359,7 +359,7 @@ public class ComDb extends DbConnection
 		List<Item> items = new ArrayList<Item>();
 		try
 		{
-			String sql = "SELECT p_id, item_date, item_id, body, title, type from items where type != 'ISSUE';";
+			String sql = "SELECT p_id, item_date, item_id, body, title, type from items natural full join links where type != 'ISSUE';";
 			String[] parms = {};
 			ResultSet rs = execPreparedQuery(sql, parms);
 			while(rs.next())
@@ -402,5 +402,10 @@ public class ComDb extends DbConnection
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public void deleteLinks() {
+		String sql = "DELETE FROM links;";
+		exec(sql);
 	}
 }

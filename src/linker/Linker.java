@@ -50,7 +50,10 @@ public abstract class Linker
 	/**
 	 * Entry point for the linker to start running our linking algorithm from items->commits.
 	 */
-	public void Link() { }
+	public void Link() {
+		if (ComResources.DEBUG)
+			comDb.deleteLinks();
+	}
 
 	/**
 	 * <p>Links {@link models.Commit} to {@link models.Issue} by parsing commit messages and <br>
@@ -76,18 +79,37 @@ public abstract class Linker
 				if (extraction instanceof StackTrace)
 				{
 					Set<LinkedExtraction> relevantCommitsByFiles = GetRelevantCommitsForFiles(((StackTrace) extraction).getFilenames(), i.getItemDate());
-					Resources.log("%i", relevantCommitsByFiles.size());
+					for (LinkedExtraction linkedE : relevantCommitsByFiles)
+					{
+						comDb.insertLink(new models.Link(i.getItemId(), linkedE.commit.getCommit_id(), linkedE.Confidence));
+					}
 				}
 				else if (extraction instanceof CodeRegion)
 				{
+					
 					//TODO @bradens
 				}
 				else if (extraction instanceof Patch)
 				{
+					
 					//TODO @bradens
 				}
 			}
 		}
+	}
+	
+	public Set<LinkedExtraction> GetRelevantCommitsByCodeRegion(CodeRegion region, Timestamp date)
+	{
+		Set<LinkedExtraction> results = new HashSet<LinkedExtraction>();
+		
+		return results;
+	}
+	
+	public Set<LinkedExtraction> GetRelevantCommitByPatch(Patch patch, Timestamp date)
+	{
+		Set<LinkedExtraction> results = new HashSet<LinkedExtraction>();
+		
+		return results;
 	}
 	
 	/**
@@ -103,7 +125,6 @@ public abstract class Linker
 		List<Commit> commitsAroundItem = linkerDb.getCommitsAroundDate(date);
 		for (Commit commit : commitsAroundItem)
 		{
-			Resources.log("Trying to link %i files", commitsAroundItem.size());
 			List<String> filesChangedAtCommit = linkerDb.getFilesChangedOnCommit(commit);
 			int matchCount = 0;
 			for (String fileInExtraction: filenames)
@@ -111,7 +132,11 @@ public abstract class Linker
 				if (filesChangedAtCommit.contains(fileInExtraction))
 					matchCount++;
 			}
-			results.add(new LinkedExtraction((matchCount / filesChangedAtCommit.size()), commit));
+			if (matchCount > 0)
+			{
+				results.add(new LinkedExtraction((matchCount / filesChangedAtCommit.size()), commit));
+				Resources.log("Match found %s: %d", commit.getComment(), (matchCount / filesChangedAtCommit.size()));
+			}
 		}
 		return results;
 	}
@@ -176,7 +201,7 @@ public abstract class Linker
 		// Look for snippet in all the files using exact matches
 		if(exactMatchOnly) {
 			for(String file: files) {
-				String rawFile = linkerDb.getRawFileFromDiffTree(file, commit.getCommit_id());
+				String rawFile = linkerDb.getRawFileFromDiffTree(file, commit.getCommit_id(), linkerDb.getCommitPathToRoot(commit.getCommit_id()));
 				if(rawFile.contains(snippet))
 					return file;
 			}
@@ -184,7 +209,7 @@ public abstract class Linker
 		// Look for snippet in all the files using substring matching and cut off
 		else {
 			for(String file: files) {
-				String rawFile = linkerDb.getRawFileFromDiffTree(file, commit.getCommit_id());
+				String rawFile = linkerDb.getRawFileFromDiffTree(file, commit.getCommit_id(), linkerDb.getCommitPathToRoot(commit.getCommit_id()));
 				int match = longestSubstr(file, snippet);
 				float matchPercent = (float)((float)match/(float)snippet.length());
 				

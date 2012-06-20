@@ -29,6 +29,7 @@ public class JiraLinker extends Linker
 	@Override
 	public void Link()
 	{	
+		super.Link();
 		// -------------------------------------------------------------------------------------
 		// Do the first pass of linking commits -> issues via commit messages
 		// and bug numbers

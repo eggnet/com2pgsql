@@ -1,5 +1,6 @@
 package db;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -51,8 +52,11 @@ public class LinkerDb extends DbConnection
 			
 			String sql = "SELECT commit_id, author, author_email, comments, commit_date, branch_id FROM commits WHERE" +
 					" (branch_id is NULL OR branch_id=?) AND" +
-					" commit_date <= ? + interval " + ComResources.COMMIT_DATE_MAX_RANGE + " day";
-			String[] parms = {date.toString()};
+					" commit_date >= ?::timestamp and commit_date <= ?::timestamp"; 
+			Timestamp dateAfter = new Timestamp(date.getTime());
+			dateAfter.setTime(date.getTime() + 3600 * 1000 * 24 * 7);
+			date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+			String[] parms = {branchID, date.toString(), dateAfter.toString()};
 			ResultSet rs = execPreparedQuery(sql, parms);
 			while(rs.next())
 			{
@@ -74,6 +78,25 @@ public class LinkerDb extends DbConnection
 	}
 	
 	public List<String> getFilesChangedOnCommit(Commit commit) {
+		try {
+			List<String> files = new ArrayList<String>();
+			String sql = "SELECT distinct file_id FROM file_diffs WHERE" +
+					" new_commit_id=?";
+			String[] parms = {commit.getCommit_id()};
+			ResultSet rs = execPreparedQuery(sql, parms);
+			while(rs.next())
+			{
+				files.add(rs.getString("file_id").substring(rs.getString("file_id").lastIndexOf("/")+1));
+			}
+			return files;
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public List<String> getFilesPathChangedOnCommit(Commit commit) {
 		try {
 			List<String> files = new ArrayList<String>();
 			String sql = "SELECT distinct file_id FROM file_diffs WHERE" +
