@@ -86,7 +86,7 @@ public abstract class Linker
 				}
 				else if (extraction instanceof CodeRegion)
 				{
-					
+					Set<LinkedExtraction> relevantCommitsBySnippet = GetRelevantCommitsByCodeRegion((CodeRegion) extraction, i.getItemDate());
 					//TODO @bradens
 				}
 				else if (extraction instanceof Patch)
@@ -101,7 +101,12 @@ public abstract class Linker
 	public Set<LinkedExtraction> GetRelevantCommitsByCodeRegion(CodeRegion region, Timestamp date)
 	{
 		Set<LinkedExtraction> results = new HashSet<LinkedExtraction>();
-		
+		List<Commit> commitsAroundItem = linkerDb.getCommitsAroundDate(date);
+		for (Commit commit : commitsAroundItem)
+		{
+			String snippetFilename = findSnippetFile(region.getText(), date, false);
+			Resources.log(snippetFilename);
+		}
 		return results;
 	}
 	
