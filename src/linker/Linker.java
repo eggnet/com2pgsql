@@ -7,6 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
 import models.Commit;
 import models.CommitFamily;
@@ -26,6 +30,15 @@ import models.extractor.sourcecode.CodeRegion;
 
 public abstract class Linker
 {
+	public class SnippetMatch {
+		public float matchPercent;
+		public String fileName;
+		public SnippetMatch(float matchPercent, String fileName)
+		{
+			this.matchPercent = matchPercent;
+			this.fileName = fileName;
+		}
+	}
 	public class LinkedExtraction {
 		public float Confidence;
 		public Commit commit;
@@ -39,6 +52,7 @@ public abstract class Linker
 	protected ComDb		comDb;
 	protected LinkerDb	linkerDb;
 	protected Extractor extractor;
+	protected ExecutorService execPool = Executors.newFixedThreadPool(10);
 
 	public Linker(ComDb comDb, LinkerDb linkerDb)
 	{
@@ -68,52 +82,81 @@ public abstract class Linker
 	 */
 	public void LinkFromItems() 
 	{
+		
 		List<Item> items = comDb.getAllItems();
-		for(Item i : items)
+		
+		// Divide the items into 10 *equal* sections for the threads
+		Set<Item> itemSet = new HashSet<Item>();
+		int itemCount = 0;
+		for(final Item i : items)
 		{
-			List<Extraction> keys = extractor.ExtractKeys(i);
-			for (Extraction extraction : keys)
+			if (itemCount >= 100)
 			{
-				Resources.log(extraction.getClass().toString());
-				
-				if (extraction instanceof StackTrace)
-				{
-					Set<LinkedExtraction> relevantCommitsByFiles = GetRelevantCommitsForFiles(((StackTrace) extraction).getFilenames(), i.getItemDate());
-					for (LinkedExtraction linkedE : relevantCommitsByFiles)
-					{
-						comDb.insertLink(new models.Link(i.getItemId(), linkedE.commit.getCommit_id(), linkedE.Confidence));
-					}
-				}
-				else if (extraction instanceof CodeRegion)
-				{
-					Set<LinkedExtraction> relevantCommitsBySnippet = GetRelevantCommitsByCodeRegion((CodeRegion) extraction, i.getItemDate());
-					//TODO @bradens
-				}
-				else if (extraction instanceof Patch)
-				{
-					
-					//TODO @bradens
-				}
+				runWorker(itemSet);
+				itemCount = 0;
+				itemSet = new HashSet<Item>();
+			}
+			else
+			{
+				itemCount++;
+				itemSet.add(i);
 			}
 		}
+		if (itemCount > 0)
+		{
+			// do remainder
+			runWorker(itemSet);
+		}
+		execPool.shutdown();
+	}
+	
+	public void runWorker(Set<Item> itemSet)
+	{
+		try {
+			LinkerThreadWorker worker = new LinkerThreadWorker(this);
+			worker.initItems(itemSet.toArray(new Item[1]));
+			execPool.execute(worker);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return;
+		}
+	}
+	
+	public Set<LinkedExtraction> GetRelevantCommitsByPatch(Patch patch, Timestamp date)
+	{
+		Set<LinkedExtraction> results = new HashSet<LinkedExtraction>();
+		List<Commit> commitsAroundItem = linkerDb.getCommitsAroundDate(date);
+		for (Commit commit : commitsAroundItem)
+		{
+			List<String> filesChangedAtCommit = linkerDb.getFilesChangedOnCommit(commit);
+			if (filesChangedAtCommit.contains(patch.getModifiedFile()))
+			{
+				results.add(new LinkedExtraction(ComResources.PATCH_MATCH_PERCENT, commit));
+				Resources.log("Match found %s: %d", commit.getComment(), patch.getModifiedFile());
+			}
+		}
+		return results;
 	}
 	
 	public Set<LinkedExtraction> GetRelevantCommitsByCodeRegion(CodeRegion region, Timestamp date)
 	{
 		Set<LinkedExtraction> results = new HashSet<LinkedExtraction>();
 		List<Commit> commitsAroundItem = linkerDb.getCommitsAroundDate(date);
+		SnippetMatch snippetMatch = findSnippetFile(region.getText(), date, false);
+		if (snippetMatch == null)
+			return null;
+		
 		for (Commit commit : commitsAroundItem)
 		{
-			String snippetFilename = findSnippetFile(region.getText(), date, false);
-			Resources.log(snippetFilename);
+			List<String> filesChangedAtCommit = linkerDb.getFilesChangedOnCommit(commit);
+			if (filesChangedAtCommit.contains(snippetMatch.fileName))
+			{
+				results.add(new LinkedExtraction(snippetMatch.matchPercent, commit));
+				Resources.log("Match found %s: %d", commit.getComment(), snippetMatch.fileName);
+			}
 		}
-		return results;
-	}
-	
-	public Set<LinkedExtraction> GetRelevantCommitByPatch(Patch patch, Timestamp date)
-	{
-		Set<LinkedExtraction> results = new HashSet<LinkedExtraction>();
-		
 		return results;
 	}
 	
@@ -185,7 +228,7 @@ public abstract class Linker
 		}
 	}
 	
-	public String findSnippetFile(String snippet, Timestamp date, boolean exactMatchOnly) {
+	public SnippetMatch findSnippetFile(String snippet, Timestamp date, boolean exactMatchOnly) {
 		Commit commit = linkerDb.getCommitAroundDate(date);
 		List<CommitFamily> commits = linkerDb.getCommitPathToRoot(commit.getCommit_id());
 		List<CommitFamily> path = reversePath(commits);
@@ -198,6 +241,8 @@ public abstract class Linker
 			files.removeAll(linkerDb.getFilesDeleted(commit.getCommit_id()));
 		}
 		
+		// FIXME This takes way too long.  Need to have a better way of getting all the 
+		// files at a certain commit.  TODO @braden
 		for(CommitFamily commitF: path) {
 			files.addAll(linkerDb.getFilesAdded(commitF.getChildId()));
 			files.removeAll(linkerDb.getFilesDeleted(commitF.getChildId()));
@@ -208,7 +253,7 @@ public abstract class Linker
 			for(String file: files) {
 				String rawFile = linkerDb.getRawFileFromDiffTree(file, commit.getCommit_id(), linkerDb.getCommitPathToRoot(commit.getCommit_id()));
 				if(rawFile.contains(snippet))
-					return file;
+					return new SnippetMatch(1.0f, file);
 			}
 		}
 		// Look for snippet in all the files using substring matching and cut off
@@ -219,7 +264,7 @@ public abstract class Linker
 				float matchPercent = (float)((float)match/(float)snippet.length());
 				
 				if(matchPercent > ComResources.STRING_MATCHING_THRESHOLD)
-					return file;
+					return new SnippetMatch(matchPercent, file);
 			}
 		}
 		

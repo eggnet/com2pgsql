@@ -12,9 +12,15 @@ package extractor.filters;
 
 import models.extractor.patch.Patch;
 import models.extractor.patch.PatchHunk;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.MatchResult;
+import java.util.regex.Pattern;
+
+import comm.RegExHelper;
 
 public class PatchParser
 {
@@ -242,6 +248,13 @@ public class PatchParser
 
 			p.setStartPosition(patchStart);
 			p.setEndPosition(patchEnd);
+			
+			Pattern fileMatchingPattern = Pattern.compile("(([\\w0-9\\$_]+\\/)+[\\w0-9\\$_]+\\.java)");
+			Iterable<MatchResult> filesMatch = RegExHelper.findMatches(fileMatchingPattern, p.getModifiedFile());
+			if(filesMatch.iterator().hasNext())
+			{
+				p.setModifiedFileFullPath(filesMatch.iterator().next().group());
+			}
 		}
 
 		return foundPatches;

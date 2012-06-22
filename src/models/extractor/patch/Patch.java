@@ -27,6 +27,7 @@ public class Patch extends Extraction
 	private int				startPosition;
 	private int				endPosition;
 	private List<PatchHunk>	hunks;
+	private String 			modifiedFileFullPath 	= "";
 
 	public Patch()
 	{
@@ -143,5 +144,15 @@ public class Patch extends Extraction
 	public void setEndPosition(int endPosition)
 	{
 		this.endPosition = endPosition;
+	}
+
+	public String getModifiedFileFullPath()
+	{
+		return modifiedFileFullPath;
+	}
+
+	public void setModifiedFileFullPath(String modifiedFileFullPath)
+	{
+		this.modifiedFileFullPath = modifiedFileFullPath;
 	}
 }

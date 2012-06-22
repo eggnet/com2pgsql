@@ -39,7 +39,7 @@ public class JiraLinker extends Linker
 		// -------------------------------------------------------------------------------------
 		// Now get try to link items -> commits by using commitID's
 		// -------------------------------------------------------------------------------------
-		//LinkFromIssueThreadItems();
+		LinkFromIssueThreadItems();
 		
 		// -------------------------------------------------------------------------------------
 		// Now get try to link items -> commits by using the item's data.

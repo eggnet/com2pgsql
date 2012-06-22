@@ -120,8 +120,8 @@ public class LinkerDb extends DbConnection
 			Commit commit = null;
 			String sql = "SELECT commit_id, author, author_email, comments, commit_date, branch_id FROM commits WHERE" +
 					" (branch_id is NULL OR branch_id=?) AND" +
-					" commit_date <= ? ";
-			String[] parms = {date.toString()};
+					" commit_date <= ?::timestamp";
+			String[] parms = {branchID, date.toString()};
 			ResultSet rs = execPreparedQuery(sql, parms);
 			while(rs.next())
 			{
