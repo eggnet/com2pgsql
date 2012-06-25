@@ -13,6 +13,10 @@ public class ComResources extends Resources
 {
 	public static final boolean DEBUG = true;
 	
+	public enum TrackerProject {
+		HIBERNATE, ECLIPSE, AGILEFANT
+	}
+	
 	public enum CommType {
 		EMAIL, BUGZILLA, JIRA, ISSUE, GITHUB, FORUM
 	}

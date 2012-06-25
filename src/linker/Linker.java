@@ -19,6 +19,7 @@ import models.Issue;
 import models.Item;
 
 import comm.ComResources;
+import comm.ComResources.TrackerProject;
 
 import db.ComDb;
 import db.LinkerDb;
@@ -49,6 +50,7 @@ public abstract class Linker
 		}
 	}
 	
+	protected TrackerProject supportedProject; 
 	protected ComDb		comDb;
 	protected LinkerDb	linkerDb;
 	protected Extractor extractor;

@@ -8,6 +8,7 @@ import linker.Linker;
 import models.Commit;
 
 import comm.ComResources;
+import comm.ComResources.TrackerProject;
 
 import db.ComDb;
 import db.LinkerDb;
@@ -34,12 +35,12 @@ public class JiraLinker extends Linker
 		// Do the first pass of linking commits -> issues via commit messages
 		// and bug numbers
 		// -------------------------------------------------------------------------------------
-		LinkFromCommitMessages();
+//		LinkFromCommitMessages();
 		
 		// -------------------------------------------------------------------------------------
 		// Now get try to link items -> commits by using commitID's
 		// -------------------------------------------------------------------------------------
-		LinkFromIssueThreadItems();
+//		LinkFromIssueThreadItems();
 		
 		// -------------------------------------------------------------------------------------
 		// Now get try to link items -> commits by using the item's data.
@@ -72,7 +73,7 @@ public class JiraLinker extends Linker
 	public Set<String> getBugNumbers(Commit c)
 	{
 		Set<String> bugNumbers = new HashSet<String>();
-
+		
 		Matcher CommitMatcher = ComResources.BUG_NUMBER_REGEX.matcher(c.getComment());
 
 		while (CommitMatcher.find())
