@@ -130,7 +130,7 @@ public abstract class Linker
 		List<Commit> commitsAroundItem = linkerDb.getCommitsAroundDate(date);
 		for (Commit commit : commitsAroundItem)
 		{
-			List<String> filesChangedAtCommit = linkerDb.getFilesChangedOnCommit(commit);
+			Set<String> filesChangedAtCommit = linkerDb.getChangesetForCommit(commit.getCommit_id());
 			if (filesChangedAtCommit.contains(patch.getModifiedFile()))
 			{
 				results.add(new LinkedExtraction(ComResources.PATCH_MATCH_PERCENT, commit));
@@ -144,14 +144,13 @@ public abstract class Linker
 	{
 		Set<LinkedExtraction> results = new HashSet<LinkedExtraction>();
 		List<Commit> commitsAroundItem = linkerDb.getCommitsAroundDate(date);
-		SnippetMatch snippetMatch = findSnippetFile(region.getText(), date, false);
-		if (snippetMatch == null)
-			return null;
 		
 		for (Commit commit : commitsAroundItem)
 		{
-			List<String> filesChangedAtCommit = linkerDb.getFilesChangedOnCommit(commit);
-			if (filesChangedAtCommit.contains(snippetMatch.fileName))
+			SnippetMatch snippetMatch = findSnippetFile(region.getText(), commit.getCommit_date(), linkerDb.getChangesetForCommit(commit.getCommit_id()), commit, false);
+			if (snippetMatch == null)
+				return null;
+			else
 			{
 				results.add(new LinkedExtraction(snippetMatch.matchPercent, commit));
 				Resources.log("Match found %s: %d", commit.getComment(), snippetMatch.fileName);
@@ -173,7 +172,7 @@ public abstract class Linker
 		List<Commit> commitsAroundItem = linkerDb.getCommitsAroundDate(date);
 		for (Commit commit : commitsAroundItem)
 		{
-			List<String> filesChangedAtCommit = linkerDb.getFilesChangedOnCommit(commit);
+			Set<String> filesChangedAtCommit = linkerDb.getChangesetForCommit(commit.getCommit_id());
 			int matchCount = 0;
 			for (String fileInExtraction: filenames)
 			{
@@ -228,26 +227,7 @@ public abstract class Linker
 		}
 	}
 	
-	public SnippetMatch findSnippetFile(String snippet, Timestamp date, boolean exactMatchOnly) {
-		Commit commit = linkerDb.getCommitAroundDate(date);
-		List<CommitFamily> commits = linkerDb.getCommitPathToRoot(commit.getCommit_id());
-		List<CommitFamily> path = reversePath(commits);
-		List<String> files = new LinkedList<String>();
-		
-		// Build all file names in project at this point
-		if(path.isEmpty()) {
-			// It's the initial commit
-			files.addAll(linkerDb.getFilesAdded(commit.getCommit_id()));
-			files.removeAll(linkerDb.getFilesDeleted(commit.getCommit_id()));
-		}
-		
-		// FIXME This takes way too long.  Need to have a better way of getting all the 
-		// files at a certain commit.  TODO @braden
-		for(CommitFamily commitF: path) {
-			files.addAll(linkerDb.getFilesAdded(commitF.getChildId()));
-			files.removeAll(linkerDb.getFilesDeleted(commitF.getChildId()));
-		}
-		
+	public SnippetMatch findSnippetFile(String snippet, Timestamp date, Set<String> files, Commit commit, boolean exactMatchOnly) {
 		// Look for snippet in all the files using exact matches
 		if(exactMatchOnly) {
 			for(String file: files) {
@@ -260,14 +240,13 @@ public abstract class Linker
 		else {
 			for(String file: files) {
 				String rawFile = linkerDb.getRawFileFromDiffTree(file, commit.getCommit_id(), linkerDb.getCommitPathToRoot(commit.getCommit_id()));
-				int match = longestSubstr(file, snippet);
+				int match = longestSubstr(rawFile, snippet);
 				float matchPercent = (float)((float)match/(float)snippet.length());
 				
 				if(matchPercent > ComResources.STRING_MATCHING_THRESHOLD)
 					return new SnippetMatch(matchPercent, file);
 			}
 		}
-		
 		return null;
 	}
 	

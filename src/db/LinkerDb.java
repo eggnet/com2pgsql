@@ -77,25 +77,6 @@ public class LinkerDb extends DbConnection
 		}
 	}
 	
-	public List<String> getFilesChangedOnCommit(Commit commit) {
-		try {
-			List<String> files = new ArrayList<String>();
-			String sql = "SELECT distinct file_id FROM file_diffs WHERE" +
-					" new_commit_id=?";
-			String[] parms = {commit.getCommit_id()};
-			ResultSet rs = execPreparedQuery(sql, parms);
-			while(rs.next())
-			{
-				files.add(rs.getString("file_id").substring(rs.getString("file_id").lastIndexOf("/")+1));
-			}
-			return files;
-		}
-		catch(SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
 	public List<String> getFilesPathChangedOnCommit(Commit commit) {
 		try {
 			List<String> files = new ArrayList<String>();
