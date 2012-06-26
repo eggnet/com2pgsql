@@ -6,15 +6,22 @@ import comm.ComResources.TextType;
 
 public class Extraction
 {
-	private TextType 	textType;
-	private String		text;
-	private Timestamp	date;
+	protected TextType 	textType;
+	protected String		text;
+	protected Timestamp	date;
 	
 	public Extraction()
 	{
 		super();
 	}
 
+	public Extraction(TextType textType, String text)
+	{
+		super();
+		this.textType = textType;
+		this.text = text;
+	}
+	
 	public Extraction(TextType textType, String text, Timestamp date)
 	{
 		super();

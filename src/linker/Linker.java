@@ -1,22 +1,20 @@
 package linker;
 
+import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
 
 import models.Commit;
 import models.CommitFamily;
-import models.Extraction;
 import models.Issue;
 import models.Item;
+import models.extractor.patch.Patch;
+import models.extractor.sourcecode.CodeRegion;
 
 import comm.ComResources;
 import comm.ComResources.TrackerProject;
@@ -25,9 +23,6 @@ import db.ComDb;
 import db.LinkerDb;
 import db.Resources;
 import extractor.Extractor;
-import models.extractor.stacktrace.StackTrace;
-import models.extractor.patch.Patch;
-import models.extractor.sourcecode.CodeRegion;
 
 public abstract class Linker
 {
@@ -133,10 +128,15 @@ public abstract class Linker
 		for (Commit commit : commitsAroundItem)
 		{
 			Set<String> filesChangedAtCommit = linkerDb.getChangesetForCommit(commit.getCommit_id());
-			if (filesChangedAtCommit.contains(patch.getModifiedFile()))
+			for (String fileName : filesChangedAtCommit)
 			{
-				results.add(new LinkedExtraction(ComResources.PATCH_MATCH_PERCENT, commit));
-				Resources.log("Match found %s: %d", commit.getComment(), patch.getModifiedFile());
+				if (fileName.contains(File.separator))
+					fileName = fileName.substring(fileName.lastIndexOf(File.separator)+1);
+				if (fileName.equals(patch.getModifiedFile()))
+				{
+					results.add(new LinkedExtraction(ComResources.PATCH_MATCH_PERCENT, commit));
+					Resources.log("Match found %s: %s", commit.getComment(), patch.getModifiedFile());
+				}
 			}
 		}
 		return results;
@@ -151,11 +151,12 @@ public abstract class Linker
 		{
 			SnippetMatch snippetMatch = findSnippetFile(region.getText(), commit.getCommit_date(), linkerDb.getChangesetForCommit(commit.getCommit_id()), commit, false);
 			if (snippetMatch == null)
-				return null;
+				return results;
 			else
 			{
+				
 				results.add(new LinkedExtraction(snippetMatch.matchPercent, commit));
-				Resources.log("Match found %s: %d", commit.getComment(), snippetMatch.fileName);
+				Resources.log("Match found %s: %s", commit.getComment(), snippetMatch.fileName);
 			}
 		}
 		return results;
@@ -175,15 +176,17 @@ public abstract class Linker
 		for (Commit commit : commitsAroundItem)
 		{
 			Set<String> filesChangedAtCommit = linkerDb.getChangesetForCommit(commit.getCommit_id());
-			int matchCount = 0;
+			Set<String> strippedFiles = stripFullFilePaths(filesChangedAtCommit);
+			
+			float matchCount = 0.0f;
 			for (String fileInExtraction: filenames)
 			{
-				if (filesChangedAtCommit.contains(fileInExtraction))
+				if (strippedFiles.contains(fileInExtraction))
 					matchCount++;
 			}
 			if (matchCount > 0)
 			{
-				results.add(new LinkedExtraction((matchCount / filesChangedAtCommit.size()), commit));
+				results.add(new LinkedExtraction((float)(matchCount / (float)filesChangedAtCommit.size()), commit));
 				Resources.log("Match found %s: %d", commit.getComment(), (matchCount / filesChangedAtCommit.size()));
 			}
 		}
@@ -244,21 +247,23 @@ public abstract class Linker
 				String rawFile = linkerDb.getRawFileFromDiffTree(file, commit.getCommit_id(), linkerDb.getCommitPathToRoot(commit.getCommit_id()));
 				int match = longestSubstr(rawFile, snippet);
 				float matchPercent = (float)((float)match/(float)snippet.length());
-				
-				if(matchPercent > ComResources.STRING_MATCHING_THRESHOLD)
+				if (matchPercent > ComResources.STRING_MATCHING_THRESHOLD)
 					return new SnippetMatch(matchPercent, file);
 			}
 		}
 		return null;
 	}
 	
-	private List<CommitFamily> reversePath(List<CommitFamily> path) {
-		List<CommitFamily> returnPath = new ArrayList<CommitFamily>();
-		
-		for(CommitFamily CF: path)
-			returnPath.add(0, CF);
-		
-		return returnPath;
+	private Set<String> stripFullFilePaths (Set<String> filePaths)
+	{
+		Set<String> strippedFiles = new HashSet<String>();
+		for (String s : filePaths)
+		{
+			if (s.contains(File.separator))
+				s = s.substring(s.lastIndexOf(File.separator)+1);
+			strippedFiles.add(s);
+		}
+		return strippedFiles;
 	}
 	
 	private int longestSubstr(String first, String second) {

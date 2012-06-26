@@ -17,11 +17,11 @@ public class CodeRegion extends Extraction implements Comparable<CodeRegion>
 	public int		start	= 0;
 
 	public int		end		= 0;
-	public String	text;
 	public String	keyword;
 
 	public CodeRegion(int start, int end, String keyword, String text)
 	{
+		super();
 		this.start = start;
 		this.end = end;
 		this.keyword = keyword;
@@ -30,10 +30,11 @@ public class CodeRegion extends Extraction implements Comparable<CodeRegion>
 
 	public CodeRegion(CodeRegion that)
 	{
+		super();
 		this.start = Integer.valueOf(that.start).intValue();
 		this.end = Integer.valueOf(that.end).intValue();
 		this.keyword = new String(that.keyword);
-		this.text = new String(that.text);
+		this.text = that.text;
 	}
 
 	public int compareTo(CodeRegion that)

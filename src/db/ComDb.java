@@ -25,6 +25,7 @@ import comm.ComResources.CommType;
 import db.util.ISetter;
 import db.util.ISetter.StringSetter;
 import db.util.ISetter.IntSetter;
+import db.util.ISetter.FloatSetter;
 import db.util.PreparedStatementExecutionItem;
 
 public class ComDb extends DbConnection
@@ -135,13 +136,41 @@ public class ComDb extends DbConnection
 	}
 	
 	public boolean insertLink(Link link) {
-		String query = "INSERT INTO links (item_id, commit_id, confidence) VALUES " +
-					"(" + link.getItemID() + ", ?, " + link.getConfidence() + ")";
-		ISetter[] params = {new StringSetter(1,link.getCommitID())};
-		PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(query, params);
-		addExecutionItem(ei);
-		ei.waitUntilExecuted();
-		return true;
+		try {
+			// First check if a link exists. 
+			String query = "SELECT * from links where item_id=? and commit_id=?";
+			ISetter[] parms = {new IntSetter(1, link.getItemID()), new StringSetter(2, link.getCommitID())};
+			PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(query, parms);
+			addExecutionItem(ei);
+			ei.waitUntilExecuted();
+			if (ei.getResult().next())
+			{
+				// If we have a existing record that has less confidence, then take the higher one.
+				// Otherwise ignore this link and keep the higher confidence one.
+				if (ei.getResult().getFloat("confidence") < link.getConfidence())
+				{
+					query = "UPDATE links SET confidence=? where item_id=? and commit_id=?";
+					ISetter[] parms2 = {new FloatSetter(1, link.getConfidence()), new IntSetter(2, link.getItemID()), new StringSetter(3, link.getCommitID())};
+					ei = new PreparedStatementExecutionItem(query, parms2);
+					addExecutionItem(ei);
+				}
+			}
+			else 
+			{
+				query = "INSERT INTO links (item_id, commit_id, confidence) VALUES " +
+				"(?, ?, ?)";
+				ISetter[] parms3 = {new IntSetter(1, link.getItemID()), new StringSetter(2,link.getCommitID()), new FloatSetter(3, link.getConfidence())};
+				ei = new PreparedStatementExecutionItem(query, parms3);
+				addExecutionItem(ei);
+				ei.waitUntilExecuted();
+			}
+			return true;
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	public boolean insertIssue(Issue issue) {

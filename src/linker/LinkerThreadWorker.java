@@ -37,15 +37,15 @@ public class LinkerThreadWorker implements Runnable
 				Resources.log(extraction.getClass().toString());	
 				if (extraction instanceof StackTrace)
 				{
-					Set<LinkedExtraction> relevantCommitsByFiles = linker.GetRelevantCommitsForFiles(((StackTrace) extraction).getFilenames(), item.getItemDate());
-					for (LinkedExtraction linkedE : relevantCommitsByFiles)
-						linker.comDb.insertLink(new models.Link(item.getItemId(), linkedE.commit.getCommit_id(), linkedE.Confidence));
+//					Set<LinkedExtraction> relevantCommitsByFiles = linker.GetRelevantCommitsForFiles(((StackTrace) extraction).getFilenames(), item.getItemDate());
+//					for (LinkedExtraction linkedE : relevantCommitsByFiles)
+//						linker.comDb.insertLink(new models.Link(item.getItemId(), linkedE.commit.getCommit_id(), linkedE.Confidence));
 				}
 				else if (extraction instanceof CodeRegion)
 				{
-					Set<LinkedExtraction> relevantCommitsBySnippet = linker.GetRelevantCommitsByCodeRegion((CodeRegion) extraction, item.getItemDate());
-					for (LinkedExtraction linkedE : relevantCommitsBySnippet)
-						linker.comDb.insertLink(new models.Link(item.getItemId(), linkedE.commit.getCommit_id(), linkedE.Confidence));
+//					Set<LinkedExtraction> relevantCommitsBySnippet = linker.GetRelevantCommitsByCodeRegion((CodeRegion) extraction, item.getItemDate());
+//					for (LinkedExtraction linkedE : relevantCommitsBySnippet)
+//						linker.comDb.insertLink(new models.Link(item.getItemId(), linkedE.commit.getCommit_id(), linkedE.Confidence));
 				}
 				else if (extraction instanceof Patch)
 				{

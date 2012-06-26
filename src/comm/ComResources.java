@@ -37,6 +37,6 @@ public class ComResources extends Resources
 	
 	public static final int COMMIT_DATE_MAX_RANGE = 7;
 	
-	public static final float STRING_MATCHING_THRESHOLD = 0.4f;
+	public static final float STRING_MATCHING_THRESHOLD = 0.2f;
 	public static final float PATCH_MATCH_PERCENT = 0.7f;
 }
