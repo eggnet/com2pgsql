@@ -77,7 +77,8 @@ public class FilterStackTraceJAVA implements IFilter
 			Pattern filenamePattern = Pattern.compile("(\\()(([\\w<>\\$_])+\\.java)(:?[0-9]*)?\\)", 40);
 			for (MatchResult filesMatch : RegExHelper.findMatches(filenamePattern, stackTraceMatchGroup))
 			{
-				foundFiles.add(filesMatch.group(2));
+				if (!(foundFiles.contains(filesMatch.group(2))))
+					foundFiles.add(filesMatch.group(2));
 			}
 		}
 		StackTrace trace = new StackTrace(exception, reason, foundFrames, foundFiles);
@@ -115,7 +116,8 @@ public class FilterStackTraceJAVA implements IFilter
 			Pattern filenamePattern = Pattern.compile("(\\n(\\()(([\\w<>\\$_])+\\.java))(:?[0-9]*)?\\)", 40);
 			for (MatchResult filesMatch : RegExHelper.findMatches(filenamePattern, stackTraceMatchGroup))
 			{
-				foundFiles.add(filesMatch.group(3));
+				if (!(foundFiles.contains(filesMatch.group(3))))
+					foundFiles.add(filesMatch.group(3));
 			}
 			
 		}
@@ -124,13 +126,6 @@ public class FilterStackTraceJAVA implements IFilter
 
 		return trace;
 	}
-
-//	private List<String> getFileNameFromStackTrace(StackTrace st)
-//	{
-//		List<String> filenames = new ArrayList<String>();
-//		
-//		for (Matcher m = filenamePattern.matcher(st.))
-//	}
 	
 	private List<StackTrace> getStackTraces(CharSequence inputSequence)
 	{

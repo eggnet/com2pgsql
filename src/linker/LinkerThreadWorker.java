@@ -28,18 +28,19 @@ public class LinkerThreadWorker implements Runnable
 	
 	public void run()
 	{
+		Resources.log("Running new thread on item : \n{");
 		for (Item item : itemSet) 
 		{
-			Resources.log("Running thread on item : " + item.getItemId());
+			Resources.log("On item : " + item.getItemId());
 			List<Extraction> keys = linker.extractor.ExtractKeys(item);
 			for (Extraction extraction : keys)
 			{
 				Resources.log(extraction.getClass().toString());	
 				if (extraction instanceof StackTrace)
 				{
-//					Set<LinkedExtraction> relevantCommitsByFiles = linker.GetRelevantCommitsForFiles(((StackTrace) extraction).getFilenames(), item.getItemDate());
-//					for (LinkedExtraction linkedE : relevantCommitsByFiles)
-//						linker.comDb.insertLink(new models.Link(item.getItemId(), linkedE.commit.getCommit_id(), linkedE.Confidence));
+					Set<LinkedExtraction> relevantCommitsByFiles = linker.GetRelevantCommitsForFiles(((StackTrace) extraction).getFilenames(), item.getItemDate());
+					for (LinkedExtraction linkedE : relevantCommitsByFiles)
+						linker.comDb.insertLink(new models.Link(item.getItemId(), linkedE.commit.getCommit_id(), linkedE.Confidence));
 				}
 				else if (extraction instanceof CodeRegion)
 				{
@@ -49,11 +50,12 @@ public class LinkerThreadWorker implements Runnable
 				}
 				else if (extraction instanceof Patch)
 				{
-					Set<LinkedExtraction> relevantCommitsBySnippet = linker.GetRelevantCommitsByPatch((Patch) extraction, item.getItemDate());
-					for (LinkedExtraction linkedE : relevantCommitsBySnippet)
-						linker.comDb.insertLink(new models.Link(item.getItemId(), linkedE.commit.getCommit_id(), linkedE.Confidence));
+//					Set<LinkedExtraction> relevantCommitsBySnippet = linker.GetRelevantCommitsByPatch((Patch) extraction, item.getItemDate());
+//					for (LinkedExtraction linkedE : relevantCommitsBySnippet)
+//						linker.comDb.insertLink(new models.Link(item.getItemId(), linkedE.commit.getCommit_id(), linkedE.Confidence));
 				}
 			}
 		}
+		Resources.log("}\n");
 	}
 }

@@ -187,7 +187,7 @@ public abstract class Linker
 			if (matchCount > 0)
 			{
 				results.add(new LinkedExtraction((float)(matchCount / (float)filesChangedAtCommit.size()), commit));
-				Resources.log("Match found %s: %d", commit.getComment(), (matchCount / filesChangedAtCommit.size()));
+				Resources.log("Match found %s: %f", commit.getComment(), (matchCount / filesChangedAtCommit.size()));
 			}
 		}
 		return results;
