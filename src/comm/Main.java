@@ -13,13 +13,13 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
 import bugzilla.Bugzilla;
-import db.ComDb;
+import db.SocialDb;
 import db.LinkerDb;
 import db.Resources;
 
 public class Main
 {
-	public static ComDb db;
+	public static SocialDb db;
 	public static LinkerDb linkdb;
 	public static Jira jira;
 	
@@ -61,7 +61,7 @@ public class Main
 				
 				CommandLine line = parser.parse(options, args);
 				
-				db = new ComDb();
+				db = new SocialDb();
 				linkdb = new LinkerDb();
 				
 				// Check for database

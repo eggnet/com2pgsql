@@ -4,7 +4,7 @@ import java.util.List;
 
 import jira.linker.JiraLinker;
 
-import db.ComDb;
+import db.SocialDb;
 import db.LinkerDb;
 import extractor.Extractor;
 
@@ -16,7 +16,7 @@ import test.TestData;
 
 public class LinkerTest
 {
-	Linker l = new JiraLinker(new ComDb(), new LinkerDb());
+	Linker l = new JiraLinker(new SocialDb(), new LinkerDb());
 	Extractor extractor = new Extractor();
 	TestData data = new TestData();
 	

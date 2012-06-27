@@ -28,7 +28,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.google.gson.Gson;
 import comm.ComResources;
-import db.ComDb;
+import db.SocialDb;
 import db.LinkerDb;
 
 public class Jira
@@ -37,7 +37,7 @@ public class Jira
 	public int							totalIssueCount		= 2;
 	public Gson							gson;
 	public String						location;
-	public ComDb						comDb;
+	public SocialDb						comDb;
 	public LinkerDb						linkerDb;
 	private List<TemporaryIssueLink>	tempLinks;
 	private JiraLinker					linker;
@@ -78,7 +78,7 @@ public class Jira
 		}
 	}
 
-	public void initJira(String location, LinkerDb linkerDb, ComDb db) throws URISyntaxException
+	public void initJira(String location, LinkerDb linkerDb, SocialDb db) throws URISyntaxException
 	{
 		gson = new Gson();
 		this.location = location;
@@ -89,7 +89,7 @@ public class Jira
 		this.IS_INITIALIZED = true;
 	}
 
-	public void parseJira(String location, LinkerDb linkerDb, ComDb comDb) throws URISyntaxException
+	public void parseJira(String location, LinkerDb linkerDb, SocialDb comDb) throws URISyntaxException
 	{
 		// initialize the Jira Client
 		initJira(location, linkerDb, comDb);
@@ -109,7 +109,7 @@ public class Jira
 		linkJira(location, linkerDb, comDb);
 	}
 
-	public void linkJira(String location, LinkerDb linkerDb, ComDb comDb) throws URISyntaxException
+	public void linkJira(String location, LinkerDb linkerDb, SocialDb comDb) throws URISyntaxException
 	{
 		if (!IS_INITIALIZED) initJira(location, linkerDb, comDb);
 		linker.Link();

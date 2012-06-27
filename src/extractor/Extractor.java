@@ -6,22 +6,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import comm.ComResources;
-import comm.RegExHelper;
-import comm.ComResources.TextType;
-import extractor.filters.FilterPatches;
-import extractor.filters.FilterSourceCodeJAVA;
-import extractor.filters.FilterStackTraceJAVA;
 
 import models.Extraction;
 import models.Issue;
 import models.Item;
 import models.extractor.patch.Patch;
-import models.extractor.patch.PatchHunk;
 import models.extractor.sourcecode.CodeRegion;
 import models.extractor.stacktrace.StackTrace;
+
+import comm.ComResources;
+import comm.RegExHelper;
+
+import db.Resources.TextType;
+import extractor.filters.FilterPatches;
+import extractor.filters.FilterSourceCodeJAVA;
+import extractor.filters.FilterStackTraceJAVA;
 
 /**
  * <p>
