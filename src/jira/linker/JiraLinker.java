@@ -8,10 +8,9 @@ import linker.Linker;
 import models.Commit;
 
 import comm.ComResources;
-import comm.ComResources.TrackerProject;
 
-import db.ComDb;
 import db.LinkerDb;
+import db.SocialDb;
 
 /**
  * <p>
@@ -22,7 +21,7 @@ import db.LinkerDb;
 public class JiraLinker extends Linker
 {
 	
-	public JiraLinker(ComDb comDb, LinkerDb linkerDb)
+	public JiraLinker(SocialDb comDb, LinkerDb linkerDb)
 	{
 		super(comDb, linkerDb);
 	}

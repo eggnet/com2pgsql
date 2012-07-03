@@ -12,7 +12,6 @@ import models.Pair;
 import models.Person;
 
 import comm.ComResources;
-import comm.ComResources.CommType;
 
 import db.DbConnection;
 

@@ -11,20 +11,19 @@ import models.Person;
 import models.Silent;
 
 import comm.ComResources;
-import comm.ComResources.CommType;
-
-import db.ComDb;
+import db.Resources.CommType;
+import db.SocialDb;
 
 public class Bugzilla
 {
-	private ComDb comDB;
+	private SocialDb comDB;
 	private BugzillaDb bugzillaDB;
 
-	public Bugzilla(ComDb comDB) {
+	public Bugzilla(SocialDb comDB) {
 		this.comDB = comDB;
 	}
 	
-	public Bugzilla(ComDb comDB, String dbName)
+	public Bugzilla(SocialDb comDB, String dbName)
 	{
 		this.comDB = comDB;
 		

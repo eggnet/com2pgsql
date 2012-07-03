@@ -19,7 +19,7 @@ import models.extractor.sourcecode.CodeRegion;
 import comm.ComResources;
 import comm.ComResources.TrackerProject;
 
-import db.ComDb;
+import db.SocialDb;
 import db.LinkerDb;
 import db.Resources;
 import extractor.Extractor;
@@ -46,12 +46,12 @@ public abstract class Linker
 	}
 	
 	protected TrackerProject supportedProject; 
-	protected ComDb		comDb;
+	protected SocialDb		comDb;
 	protected LinkerDb	linkerDb;
 	protected Extractor extractor;
 	protected ExecutorService execPool = Executors.newFixedThreadPool(10);
 
-	public Linker(ComDb comDb, LinkerDb linkerDb)
+	public Linker(SocialDb comDb, LinkerDb linkerDb)
 	{
 		this.comDb = comDb;
 		this.linkerDb = linkerDb;

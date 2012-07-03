@@ -12,13 +12,13 @@ import linker.Linker;
 import models.Commit;
 import models.Pair;
 
-import db.ComDb;
+import db.SocialDb;
 import db.LinkerDb;
 
 public class BugzillaLinker extends Linker
 {
 
-	public BugzillaLinker(ComDb comDb, LinkerDb linkerDb)
+	public BugzillaLinker(SocialDb comDb, LinkerDb linkerDb)
 	{
 		super(comDb, linkerDb);
 	}

@@ -1,23 +1,18 @@
 package email.linker;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
-import comm.ComResources;
-
-import db.ComDb;
-import db.LinkerDb;
 import linker.Linker;
 import models.Commit;
-import models.CommitFamily;
 import models.Item;
 import models.Person;
+import db.LinkerDb;
+import db.SocialDb;
 
 public class EmailLinker extends Linker
 {
-	public EmailLinker(ComDb comDb, LinkerDb linkerDb)
+	public EmailLinker(SocialDb comDb, LinkerDb linkerDb)
 	{
 		super(comDb, linkerDb);
 	}

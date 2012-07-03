@@ -46,37 +46,6 @@ public class LinkerDb extends TechnicalDb
 		return commits;
 	}
 	
-	public List<Commit> getCommitsAroundDate(Timestamp date) {
-		try {
-			List<Commit> commits = new ArrayList<Commit>();
-			
-			String sql = "SELECT commit_id, author, author_email, comments, commit_date, branch_id FROM commits WHERE" +
-					" (branch_id is NULL OR branch_id=?) AND" +
-					" commit_date >= ?::timestamp and commit_date <= ?::timestamp"; 
-			Timestamp dateAfter = new Timestamp(date.getTime());
-			dateAfter.setTime(date.getTime() + 3600 * 1000 * 24 * 7);
-			date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-			String[] parms = {branchID, date.toString(), dateAfter.toString()};
-			ResultSet rs = execPreparedQuery(sql, parms);
-			while(rs.next())
-			{
-				commits.add(new Commit(
-						rs.getString("commit_id"),
-						rs.getString("author"),
-						rs.getString("author_email"),
-						rs.getString("comments"),
-						rs.getTimestamp("commit_date"),
-						rs.getString("branch_id")
-				));
-			}
-			return commits;
-		}
-		catch(SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
 	public List<String> getFilesPathChangedOnCommit(Commit commit) {
 		try {
 			List<String> files = new ArrayList<String>();
@@ -89,32 +58,6 @@ public class LinkerDb extends TechnicalDb
 				files.add(rs.getString("file_id"));
 			}
 			return files;
-		}
-		catch(SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	public Commit getCommitAroundDate(Timestamp date) {
-		try {
-			Commit commit = null;
-			String sql = "SELECT commit_id, author, author_email, comments, commit_date, branch_id FROM commits WHERE" +
-					" (branch_id is NULL OR branch_id=?) AND" +
-					" commit_date <= ?::timestamp";
-			String[] parms = {branchID, date.toString()};
-			ResultSet rs = execPreparedQuery(sql, parms);
-			while(rs.next())
-			{
-				commit = new Commit(
-						rs.getString("commit_id"),
-						rs.getString("author"),
-						rs.getString("author_email"),
-						rs.getString("comments"),
-						rs.getTimestamp("commit_date"),
-						rs.getString("branch_id"));
-			}
-			return commit;
 		}
 		catch(SQLException e) {
 			e.printStackTrace();

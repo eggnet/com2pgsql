@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project com2pgsql with Jar-in-Jar Loader">
+<!--this file was created by Eclipse Runnable JAR Export Wizard-->
+<!--ANT 1.7 is required                                        -->
+<target name="create_run_jar">
+<jar destfile="/Users/braden/com.jar">
+<manifest>
+<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+<attribute name="Rsrc-Main-Class" value="comm.Main"/>
+<attribute name="Class-Path" value="."/>
+<attribute name="Rsrc-Class-Path" value="./ postgresql-9.1-902.jdbc4.jar gson-2.2.1.jar database.jar httpclient-4.2.jar httpcore-4.2.jar commons-cli-1.2.jar commons-logging-1.1.1.jar jazzy.jar ostermillerutils-1.08.02.jar junit.jar org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+</manifest>
+<zipfileset src="jar-in-jar-loader.zip"/>
+<fileset dir="/Users/braden/com2pgsql/bin"/>
+<zipfileset dir="/Users/braden/com2pgsql/libs" includes="postgresql-9.1-902.jdbc4.jar"/>
+<zipfileset dir="/Users/braden/com2pgsql/libs" includes="gson-2.2.1.jar"/>
+<zipfileset dir="/Users/braden/libs/database" includes="database.jar"/>
+<zipfileset dir="/Users/braden/com2pgsql/libs" includes="httpclient-4.2.jar"/>
+<zipfileset dir="/Users/braden/com2pgsql/libs" includes="httpcore-4.2.jar"/>
+<zipfileset dir="/Users/braden/com2pgsql/libs" includes="commons-cli-1.2.jar"/>
+<zipfileset dir="/Users/braden/com2pgsql/libs" includes="commons-logging-1.1.1.jar"/>
+<zipfileset dir="/Users/braden/com2pgsql/libs" includes="jazzy.jar"/>
+<zipfileset dir="/Users/braden/com2pgsql/libs" includes="ostermillerutils-1.08.02.jar"/>
+<zipfileset dir="/Applications/eclipse/plugins/org.junit4_4.5.0.v20090824" includes="junit.jar"/>
+<zipfileset dir="/Applications/eclipse/plugins" includes="org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+</jar>
+</target>
+</project>

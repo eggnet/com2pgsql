@@ -13,13 +13,13 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
 import bugzilla.Bugzilla;
-import db.ComDb;
+import db.SocialDb;
 import db.LinkerDb;
 import db.Resources;
 
 public class Main
 {
-	public static ComDb db;
+	public static SocialDb db;
 	public static LinkerDb linkdb;
 	public static Jira jira;
 	
@@ -61,7 +61,7 @@ public class Main
 				
 				CommandLine line = parser.parse(options, args);
 				
-				db = new ComDb();
+				db = new SocialDb();
 				linkdb = new LinkerDb();
 				
 				// Check for database
@@ -76,7 +76,7 @@ public class Main
 				    	// Create the DB
 				    	System.out.println("Creating database");
 				    	ComResources.log(ComResources.dbUrl);
-						db.connect(Resources.EGGNET_DB_NAME);
+						db.connect(Resources.EGGNET_DB_NAME, ComResources.COM_QUEUE_WORKER_LIMIT);
 						db.createDb(line.getOptionValue("d"));
 				    }
 				}
@@ -121,7 +121,7 @@ public class Main
 						if (values[0].equals("-l"))
 						{
 							// only link.
-							db.connect(values[1]);
+							db.connect(values[1], ComResources.COM_QUEUE_WORKER_LIMIT);
 							linkdb.connect(values[2]);
 							linkdb.setBranchName("master");
 							jira.linkJira(null, linkdb, db);
@@ -130,7 +130,7 @@ public class Main
 						else
 						{
 							System.out.println("Running Jira parser on " + line.getOptionValue("j"));
-							db.connect(values[0]);
+							db.connect(values[0], ComResources.COM_QUEUE_WORKER_LIMIT);
 							linkdb.connect(values[1]);
 							linkdb.setBranchName("master");
 							jira.parseJira(values[2], linkdb, db);
