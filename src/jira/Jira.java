@@ -100,6 +100,8 @@ public class Jira
 		for (TemporaryIssueLink tLink : this.tempLinks)
 		{
 			int dependsID = comDb.findItemIDFromJiraKey(tLink.DependsKey);
+			if (dependsID == -1)
+				continue;
 			comDb.insertDependency(new Dependency(tLink.getItemID(), dependsID));
 		}
 

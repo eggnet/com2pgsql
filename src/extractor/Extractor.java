@@ -111,28 +111,15 @@ public class Extractor
 	 * Extracts the technical information from the given {@link models.Issue}
 	 * and parses it into <br>
 	 * the technical extractions {@link models.Extraction}.
-	 * 
+	 * <h3>UNIMPLEMENTED</h3>
 	 * @param {@link models.Issue} item
 	 * @return
 	 */
 	public List<Extraction> ExtractKeys(Issue issue)
 	{
-		
-		// TODO @braden FIXME this needs fixing to be similar to #ExtractKeys(Item item)
-		
-		// get all item keys.
-		List<Extraction> keys = new LinkedList<Extraction>();
-
-		// First search through the title.
-		List<Extraction> titleKeys = matchSHA1(issue.getTitle(), issue.getCreationTS());
-		titleKeys.addAll(matchBugNumber(issue.getTitle(), issue.getCreationTS()));
-
-		List<Extraction> bodyKeys = matchSHA1(issue.getDescription(), issue.getCreationTS());
-		bodyKeys.addAll(matchBugNumber(issue.getDescription(), issue.getCreationTS()));
-
-		keys.addAll(titleKeys);
-		keys.addAll(bodyKeys);
-		return keys;
+		// This is currently unused because we aren't using any extra logic for an issue,
+		// write this code in the future if the issues need more logic.
+		return null;
 	}
 
 	private List<Extraction> matchBugNumber(String input, Timestamp timestamp)
