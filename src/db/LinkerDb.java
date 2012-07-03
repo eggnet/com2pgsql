@@ -14,7 +14,7 @@ import comm.ComResources;
 
 import models.Commit;
 
-public class LinkerDb extends DbConnection
+public class LinkerDb extends TechnicalDb
 {
 	public LinkerDb() { }
 	
