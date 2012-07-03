@@ -131,7 +131,7 @@ public class Jira
 					"startAt", String.valueOf(startPosition)).setParameter("maxResults",
 					String.valueOf(ComResources.JIRA_MAX_RESULTS)).setParameter("fields", "*all").build();
 
-			HttpGet httpget = new HttpGet(uri);
+			HttpGet httpget = new HttpGet(uri.toString() + "&jql=project%3DHHH");
 			HttpResponse resp = httpClient.execute(httpget);
 			HttpEntity entity = resp.getEntity();
 			if (entity != null)
@@ -174,6 +174,9 @@ public class Jira
 			// -----------------------------------------------------------------------------
 			Person newCreator = new Person(-1, jiraIssue.getFields().getReporter().getDisplayName(), jiraIssue
 					.getFields().getReporter().getEmailAddress());
+			
+			if (newCreator.getEmail() == null || newCreator.getName() == null) return;
+			
 			int pID = comDb.insertPerson(newCreator);
 
 			// -----------------------------------------------------------------------------
@@ -251,6 +254,8 @@ public class Jira
 			{
 				Person newPerson = new Person(-1, comment.getAuthor().getDisplayName(), comment.getAuthor()
 						.getEmailAddress());
+				if (newPerson.getEmail() == null || newPerson.getName() == null) return;
+				
 				newPerson.setPID(comDb.insertPerson(newPerson));
 				Item newCommentItem = new Item(comment);
 				newCommentItem.setPerson(newPerson.getEmail());

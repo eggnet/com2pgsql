@@ -23,7 +23,7 @@ public class ComResources extends Resources
 	public static final Pattern NUMBER = Pattern.compile("([0-9]+)");
 	public static final Pattern COMMIT_KEYWORDS = Pattern.compile("fix(e[ds])?|bugs?|defects|patch");
 	public static final Pattern BUG_NUMBER_BUGZILLA_REGEX = Pattern.compile("bug[#\\s]*([0-9]+{1})");
-	
+	public static final int COM_QUEUE_WORKER_LIMIT = 1;
 	public static final int JIRA_MAX_RESULTS = 50;
 	
 	public static final int COMMIT_DATE_MAX_RANGE = 7;
