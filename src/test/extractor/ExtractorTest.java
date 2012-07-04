@@ -48,11 +48,4 @@ public class ExtractorTest
 		List<Extraction> results = extractor.ExtractKeys(data.StackTraceItem);
 		assertEquals(results.size(), 2);
 	}
-
-	@Test
-	public void TestFindBugNumber()
-	{
-		List<Extraction> results = extractor.ExtractKeys(data.jiraIssueTest);
-		assertEquals(results.size(), 1);
-	}
 }
