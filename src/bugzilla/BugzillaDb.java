@@ -14,6 +14,8 @@ import models.Person;
 import comm.ComResources;
 
 import db.DbConnection;
+import db.util.ISetter;
+import db.util.PreparedStatementExecutionItem;
 
 public class BugzillaDb extends DbConnection
 {
@@ -28,8 +30,13 @@ public class BugzillaDb extends DbConnection
 			String sql = "SELECT * FROM bugzilla_bugs " +
 					"ORDER BY bug_id " +
 					"LIMIT " + iLIMIT + " OFFSET " + iOFFSET; 
-			String[] parms = {};
-			ResultSet rs = execPreparedQuery(sql, parms);
+			
+			ISetter[] params = {};
+			PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(sql, params);
+			addExecutionItem(ei);
+			ei.waitUntilExecuted();
+			ResultSet rs = ei.getResult();
+			
 			while(rs.next())
 			{
 				issues.add(new Issue(-1, rs.getString("bug_status"), rs.getString("assigned_to"), 
@@ -51,8 +58,13 @@ public class BugzillaDb extends DbConnection
 			LinkedList<Person> people = new LinkedList<Person>();
 			String sql = "SELECT * FROM bugzilla_cc " +
 					"WHERE bug_id=" + issue.getIssueNum();
-			String[] parms = {};
-			ResultSet rs = execPreparedQuery(sql, parms);
+			
+			ISetter[] params = {};
+			PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(sql, params);
+			addExecutionItem(ei);
+			ei.waitUntilExecuted();
+			ResultSet rs = ei.getResult();
+			
 			while(rs.next())
 			{
 				people.add(new Person(-1, "", rs.getString("who")));
@@ -72,8 +84,11 @@ public class BugzillaDb extends DbConnection
 			LinkedList<Item> items = new LinkedList<Item>();
 			String sql = "SELECT * FROM bugzilla_longdescs " +
 					"WHERE bug_id=" + issue.getIssueNum();
-			String[] parms = {};
-			ResultSet rs = execPreparedQuery(sql, parms);
+			ISetter[] params = {};
+			PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(sql, params);
+			addExecutionItem(ei);
+			ei.waitUntilExecuted();
+			ResultSet rs = ei.getResult();
 			while(rs.next())
 			{
 				items.add(new Item(rs.getString("who"), rs.getTimestamp("bug_when"), 
@@ -94,8 +109,13 @@ public class BugzillaDb extends DbConnection
 			LinkedList<Attachment> attachments = new LinkedList<Attachment>();
 			String sql = "SELECT * FROM bugzilla_attachments " +
 					"WHERE bug_id=" + issue.getIssueNum();
-			String[] parms = {};
-			ResultSet rs = execPreparedQuery(sql, parms);
+			
+			ISetter[] params = {};
+			PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(sql, params);
+			addExecutionItem(ei);
+			ei.waitUntilExecuted();
+			ResultSet rs = ei.getResult();
+			
 			while(rs.next())
 			{
 				attachments.add(new Attachment(issue.getItemID(), rs.getString("filename"), rs.getString("thedata")));
@@ -116,8 +136,13 @@ public class BugzillaDb extends DbConnection
 			String sql = "SELECT * FROM bugzilla_dependencies " +
 					"ORDER BY bug_id " +
 					"LIMIT " + iLIMIT + " OFFSET " + iOFFSET; 
-			String[] parms = {};
-			ResultSet rs = execPreparedQuery(sql, parms);
+			
+			ISetter[] params = {};
+			PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(sql, params);
+			addExecutionItem(ei);
+			ei.waitUntilExecuted();
+			ResultSet rs = ei.getResult();
+			
 			while(rs.next())
 			{
 				depends.add(new Pair<Integer, Integer>(rs.getInt("blocked"), rs.getInt("dependson")));
@@ -138,8 +163,13 @@ public class BugzillaDb extends DbConnection
 			String sql = "SELECT * FROM bugzilla_duplicates " +
 					"ORDER BY bug_id " +
 					"LIMIT " + iLIMIT + " OFFSET " + iOFFSET; 
-			String[] parms = {};
-			ResultSet rs = execPreparedQuery(sql, parms);
+			
+			ISetter[] params = {};
+			PreparedStatementExecutionItem ei = new PreparedStatementExecutionItem(sql, params);
+			addExecutionItem(ei);
+			ei.waitUntilExecuted();
+			ResultSet rs = ei.getResult();
+			
 			while(rs.next())
 			{
 				depends.add(new Pair<Integer, Integer>(rs.getInt("dupe_of"), rs.getInt("dupe")));
