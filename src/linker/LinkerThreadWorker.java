@@ -17,7 +17,7 @@ public class LinkerThreadWorker implements Runnable
 	Item[] itemSet;
 	
 	public LinkerThreadWorker(Linker linker)
-	{
+	{		
 		this.linker = linker;
 	}
 	
