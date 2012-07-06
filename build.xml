@@ -21,8 +21,7 @@
 <zipfileset dir="libs" includes="commons-logging-1.1.1.jar"/>
 <zipfileset dir="libs" includes="jazzy.jar"/>
 <zipfileset dir="libs" includes="ostermillerutils-1.08.02.jar"/>
-<zipfileset dir="/Applications/eclipse/plugins/org.junit4_4.5.0.v20090824" includes="junit.jar"/>
-<zipfileset dir="/Applications/eclipse/plugins" includes="org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+<zipfileset dir="libs" includes="junit-4.11.jar"/>
 </jar>
 </target>
 </project>

@@ -133,7 +133,7 @@ public class Jira
 					"startAt", String.valueOf(startPosition)).setParameter("maxResults",
 					String.valueOf(ComResources.JIRA_MAX_RESULTS)).setParameter("fields", "*all").build();
 
-			HttpGet httpget = new HttpGet(uri.toString() + "&jql=project%3DHHH");
+			HttpGet httpget = new HttpGet(uri.toString() + "&jql=project%3D" + ComResources.ISSUE_NUMBER_KEY);
 			HttpResponse resp = httpClient.execute(httpget);
 			HttpEntity entity = resp.getEntity();
 			if (entity != null)
