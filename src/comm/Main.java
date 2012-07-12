@@ -53,11 +53,15 @@ public class Main
 				Option jiraOpt 	= OptionBuilder.withArgName("j")
 											   .hasArgs(3)
 											   .create("j");
+				Option issueOpt  = OptionBuilder.withArgName("j")
+											   .hasArg()
+											   .create("i");
 				
 				options.addOption(bugzilla);
 				options.addOption(database);
 				options.addOption(email);
 				options.addOption(jiraOpt);
+				options.addOption(issueOpt);
 				
 				CommandLine line = parser.parse(options, args);
 				
@@ -108,6 +112,19 @@ public class Main
 				    }
 				}
 				
+				// Check for email
+				if(line.hasOption("i")) {
+				    String[] values = line.getOptionValues("i");
+				    if(values.length != 1) {
+				    	System.out.println("-e flag used incorrectly.");
+				    	printMan();
+				    	return;
+				    }
+				    else {
+				    	ComResources.ISSUE_NUMBER_KEY = values[0];
+				    }
+				}
+				
 				// Check for jira
 				if (line.hasOption("j")) {
 					String[] values = line.getOptionValues("j");
@@ -138,6 +155,8 @@ public class Main
 					}
 				}
 			}
+			db.close();
+			linkdb.close();
 		}
 		catch (Exception e)
 		{

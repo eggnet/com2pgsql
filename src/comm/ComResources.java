@@ -25,7 +25,7 @@ public class ComResources extends Resources
 	public static final Pattern BUG_NUMBER_BUGZILLA_REGEX = Pattern.compile("bug[#\\s]*([0-9]+{1})");
 	public static final int COM_QUEUE_WORKER_LIMIT = 1;
 	public static final int JIRA_MAX_RESULTS = 50;
-	public static final String ISSUE_NUMBER_KEY = "OGM";
+	public static String ISSUE_NUMBER_KEY = "ORM";
 	public static final int COMMIT_DATE_MAX_RANGE = 7;
 	
 	public static final float STRING_MATCHING_THRESHOLD = 0.2f;
