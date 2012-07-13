@@ -2,15 +2,15 @@ package linker;
 
 import java.io.File;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import models.Commit;
-import models.CommitFamily;
 import models.Issue;
 import models.Item;
 import models.extractor.patch.Patch;
@@ -19,9 +19,9 @@ import models.extractor.sourcecode.CodeRegion;
 import comm.ComResources;
 import comm.ComResources.TrackerProject;
 
-import db.SocialDb;
-import db.LinkerDb;
 import db.Resources;
+import db.SocialDb;
+import db.TechnicalDb;
 import extractor.Extractor;
 
 public abstract class Linker
@@ -47,11 +47,11 @@ public abstract class Linker
 	
 	protected TrackerProject supportedProject; 
 	protected SocialDb		comDb;
-	protected LinkerDb	linkerDb;
+	protected TechnicalDb	linkerDb;
 	protected Extractor extractor;
 	protected ExecutorService execPool = Executors.newFixedThreadPool(10);
 
-	public Linker(SocialDb comDb, LinkerDb linkerDb)
+	public Linker(SocialDb comDb, TechnicalDb linkerDb)
 	{
 		this.comDb = comDb;
 		this.linkerDb = linkerDb;
@@ -85,11 +85,12 @@ public abstract class Linker
 		// Divide the items into 10 *equal* sections for the threads
 		Set<Item> itemSet = new HashSet<Item>();
 		int itemCount = 0;
+		Set<Future<?>> tasks = new HashSet<Future<?>>();
 		for(final Item i : items)
 		{
-			if (itemCount >= 100)
+			if (itemCount >= 1000)
 			{
-				runWorker(itemSet);
+				tasks.add(runWorker(itemSet));
 				itemCount = 0;
 				itemSet = new HashSet<Item>();
 			}
@@ -102,22 +103,40 @@ public abstract class Linker
 		if (itemCount > 0)
 		{
 			// do remainder
-			runWorker(itemSet);
+			tasks.add(runWorker(itemSet));
 		}
-		execPool.shutdown();
+		waitUntilFinished(tasks);
 	}
 	
-	public void runWorker(Set<Item> itemSet)
+	public void waitUntilFinished(Set<Future<?>>tasks) {
+		execPool.shutdown();
+		for (Future<?> f : tasks) {
+		    try
+			{
+				f.get();
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+			catch (ExecutionException e)
+			{
+				e.printStackTrace();
+			} 
+		}
+	}
+	
+	public Future<?> runWorker(Set<Item> itemSet)
 	{
 		try {
 			LinkerThreadWorker worker = new LinkerThreadWorker(this);
 			worker.initItems(itemSet.toArray(new Item[1]));
-			execPool.execute(worker);
+			return execPool.submit(worker);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return;
+			return null;
 		}
 	}
 	
@@ -196,7 +215,7 @@ public abstract class Linker
 	/**
 	 * <p>Links {@link models.Item} to {@link models.Issue} by parsing the date of the item<br>
 	 * and the date of commits linked to the Item's thread.  Then after finding a 'correct'<br>
-	 * commit, the item->commit link get's placed in the {@link db.LinkerDb}.  This algorithm <br>
+	 * commit, the item->commit link get's placed in the {@link db.TechnicalDb}.  This algorithm <br>
 	 * is only performed on the items that are children of threads.<p>
 	 */
 	public void LinkFromIssueThreadItems() { 

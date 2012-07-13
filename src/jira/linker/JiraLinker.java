@@ -2,6 +2,7 @@ package jira.linker;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
 import linker.Linker;
@@ -11,6 +12,7 @@ import comm.ComResources;
 
 import db.LinkerDb;
 import db.SocialDb;
+import db.TechnicalDb;
 
 /**
  * <p>
@@ -21,7 +23,7 @@ import db.SocialDb;
 public class JiraLinker extends Linker
 {
 	
-	public JiraLinker(SocialDb comDb, LinkerDb linkerDb)
+	public JiraLinker(SocialDb comDb, TechnicalDb linkerDb)
 	{
 		super(comDb, linkerDb);
 	}
@@ -34,17 +36,20 @@ public class JiraLinker extends Linker
 		// Do the first pass of linking commits -> issues via commit messages
 		// and bug numbers
 		// -------------------------------------------------------------------------------------
-		LinkFromCommitMessages();
+//		LinkFromCommitMessages();
 		
 		// -------------------------------------------------------------------------------------
 		// Now get try to link items -> commits by using commitID's
 		// -------------------------------------------------------------------------------------
-		LinkFromIssueThreadItems();
+//		LinkFromIssueThreadItems();
 		
 		// -------------------------------------------------------------------------------------
 		// Now get try to link items -> commits by using the item's data.
 		// -------------------------------------------------------------------------------------
 		LinkFromItems();
+		
+		// Wait for all threads to finish then return.
+		
 	}
 
 	@Override

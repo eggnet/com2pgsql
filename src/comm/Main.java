@@ -16,11 +16,12 @@ import bugzilla.Bugzilla;
 import db.SocialDb;
 import db.LinkerDb;
 import db.Resources;
+import db.TechnicalDb;
 
 public class Main
 {
 	public static SocialDb db;
-	public static LinkerDb linkdb;
+	public static TechnicalDb linkdb;
 	public static Jira jira;
 	
 	@SuppressWarnings("static-access")
@@ -66,7 +67,7 @@ public class Main
 				CommandLine line = parser.parse(options, args);
 				
 				db = new SocialDb();
-				linkdb = new LinkerDb();
+				linkdb = new TechnicalDb();
 				
 				// Check for database
 				if(line.hasOption("d")) {
@@ -142,7 +143,6 @@ public class Main
 							linkdb.connect(values[2]);
 							linkdb.setBranchName("master");
 							jira.linkJira(null, linkdb, db);
-							
 						}
 						else
 						{
@@ -155,6 +155,7 @@ public class Main
 					}
 				}
 			}
+			
 			db.close();
 			linkdb.close();
 		}
