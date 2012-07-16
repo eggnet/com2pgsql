@@ -77,8 +77,8 @@ public class Extractor
 	private List<Extraction> extractItemSummary(Item item)
 	{
 		List<Extraction> titleKeys = new ArrayList<Extraction>();
-		titleKeys.addAll(matchSHA1(item.getBody(), item.getItemDate()));
-		titleKeys.addAll(matchBugNumber(item.getBody(), item.getItemDate()));
+		titleKeys.addAll(matchSHA1(item.getTitle(), item.getItemDate()));
+		titleKeys.addAll(matchBugNumber(item.getTitle(), item.getItemDate()));
 		return titleKeys;
 	}
 	

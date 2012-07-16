@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import models.Commit;
 import models.Issue;
@@ -84,12 +85,11 @@ public abstract class Linker
 		
 		Set<Item> itemSet = new HashSet<Item>();
 		int itemCount = 0;
-		Set<Future<?>> tasks = new HashSet<Future<?>>();
 		for(final Item i : items)
 		{
 			if (itemCount >= 1000)
 			{
-				tasks.add(runWorker(itemSet));
+				runWorker(itemSet);
 				itemCount = 0;
 				itemSet = new HashSet<Item>();
 			}
@@ -102,40 +102,30 @@ public abstract class Linker
 		if (itemCount > 0)
 		{
 			// do remainder
-			tasks.add(runWorker(itemSet));
+			runWorker(itemSet);
 		}
-		waitUntilFinished(tasks);
+		waitUntilFinished();
 	}
 	
-	public void waitUntilFinished(Set<Future<?>>tasks) {
+	public void waitUntilFinished() {
 		execPool.shutdown();
-		for (Future<?> f : tasks) {
-		    try
-			{
-				f.get();
-			}
-			catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-			catch (ExecutionException e)
-			{
-				e.printStackTrace();
-			} 
+		try {
+			execPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 	
-	public Future<?> runWorker(Set<Item> itemSet)
+	public void runWorker(Set<Item> itemSet)
 	{
 		try {
 			LinkerThreadWorker worker = new LinkerThreadWorker(this);
 			worker.initItems(itemSet.toArray(new Item[0]));
-			return execPool.submit(worker);
+			execPool.execute(worker);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return null;
 		}
 	}
 	
