@@ -14,7 +14,7 @@ import db.Resources;
 public class LinkerThreadWorker implements Runnable
 {
 	Linker linker;
-	Item[] itemSet;
+	private Item[] itemSet;
 	
 	public LinkerThreadWorker(Linker linker)
 	{		
@@ -28,7 +28,7 @@ public class LinkerThreadWorker implements Runnable
 	
 	public void run()
 	{
-		Resources.log("Running new thread on item : \n{");
+		Resources.log("Running new thread on : \n{");
 		for (Item item : itemSet) 
 		{
 			Resources.log("On item : " + item.getItemId());

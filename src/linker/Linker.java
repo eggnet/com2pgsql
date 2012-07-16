@@ -82,7 +82,6 @@ public abstract class Linker
 		
 		List<Item> items = comDb.getAllItems();
 		
-		// Divide the items into 10 *equal* sections for the threads
 		Set<Item> itemSet = new HashSet<Item>();
 		int itemCount = 0;
 		Set<Future<?>> tasks = new HashSet<Future<?>>();
@@ -130,7 +129,7 @@ public abstract class Linker
 	{
 		try {
 			LinkerThreadWorker worker = new LinkerThreadWorker(this);
-			worker.initItems(itemSet.toArray(new Item[1]));
+			worker.initItems(itemSet.toArray(new Item[0]));
 			return execPool.submit(worker);
 		}
 		catch (Exception e)
