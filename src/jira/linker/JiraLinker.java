@@ -36,20 +36,17 @@ public class JiraLinker extends Linker
 		// Do the first pass of linking commits -> issues via commit messages
 		// and bug numbers
 		// -------------------------------------------------------------------------------------
-//		LinkFromCommitMessages();
+		LinkFromCommitMessages();
 		
 		// -------------------------------------------------------------------------------------
 		// Now get try to link items -> commits by using commitID's
 		// -------------------------------------------------------------------------------------
-//		LinkFromIssueThreadItems();
+		LinkFromIssueThreadItems();
 		
 		// -------------------------------------------------------------------------------------
 		// Now get try to link items -> commits by using the item's data.
 		// -------------------------------------------------------------------------------------
 		LinkFromItems();
-		
-		// Wait for all threads to finish then return.
-		
 	}
 
 	@Override
