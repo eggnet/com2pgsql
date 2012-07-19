@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="libs"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libs/postgresql-9.1-902.jdbc4.jar"/>
 	<classpathentry kind="lib" path="libs/gson-2.2.1.jar" sourcepath="/Users/braden/com2pgsql/libs/gson-2.2.1-sources.jar"/>
 	<classpathentry kind="lib" path="libs/httpclient-4.2.jar"/>
 	<classpathentry kind="lib" path="libs/httpcore-4.2.jar"/>
@@ -13,6 +12,8 @@
 	<classpathentry kind="lib" path="libs/ostermillerutils-1.08.02.jar"/>
 	<classpathentry kind="lib" path="commons-lang3-3.1.jar"/>
 	<classpathentry kind="lib" path="libs/junit-4.11.jar"/>
+	<classpathentry kind="lib" path="/libs/database/database.jar" sourcepath="/database/src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/database"/>
+	<classpathentry kind="lib" path="/libs/postgresql-9.1-902.jdbc4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
