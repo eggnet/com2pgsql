@@ -26,6 +26,11 @@ public class JiraLinker extends Linker
 		super(comDb, linkerDb);
 	}
 
+	/**
+	 * Runs the linker process, first links from commit messages, 
+	 * then issue thread items, then directly from the text anaylsis 
+	 * on issues.
+	 */
 	@Override
 	public void Link()
 	{	
@@ -47,11 +52,11 @@ public class JiraLinker extends Linker
 		LinkFromItems();
 	}
 
-	@Override
 	/**
 	 * Links to the communications artifacts from the commit comments by searching for 
 	 * bug numbers using {@link ComResources.BUG_NUMBER_REGEX}.
 	 */
+	@Override
 	public void LinkFromCommitMessages()
 	{
 		if (!ComResources.LINK_FROM_COMMIT_MSGS)
@@ -73,6 +78,12 @@ public class JiraLinker extends Linker
 		}
 	}
 	
+	/**
+	 * Matches all the bugs numbers as defined in {@link ComResources.BUG_NUMBER_REGEX}
+	 * in a given commit message
+	 * @param c
+	 * @return Set of Bug number matches
+	 */
 	public Set<String> getBugNumbers(Commit c)
 	{
 		Set<String> bugNumbers = new HashSet<String>();

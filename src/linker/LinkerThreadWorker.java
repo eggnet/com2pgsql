@@ -11,6 +11,12 @@ import models.extractor.sourcecode.CodeRegion;
 import models.extractor.stacktrace.StackTrace;
 import db.Resources;
 
+/**
+ * A single worker for the Linker, it runs on a given set of {@link models.Item}
+ * and inserts the links (if any) into the {@link SocialDb} queue.
+ * @author braden
+ *
+ */
 public class LinkerThreadWorker implements Runnable
 {
 	Linker linker;

@@ -17,6 +17,15 @@ import db.Resources;
 import db.SocialDb;
 import db.TechnicalDb;
 
+/**
+ * Entry point for the Com2Pgsql project by Eggnet at UVic.
+ * 
+ * For instructions on how to use this class and project, visit
+ * <a href='http://github.com/eggnet/com2pgsql/wiki'>The Project Wiki</a> 
+ * 
+ * @author braden
+ *
+ */
 public class Main
 {
 	public static SocialDb db;

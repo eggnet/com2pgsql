@@ -22,9 +22,21 @@ import db.SocialDb;
 import db.TechnicalDb;
 import extractor.Extractor;
 
+/** 
+ * Abstract implementation of the Linker, Extending classes 
+ * should override the {@link #Link()} method to define their
+ * own methods of linking to {@link models.Commit}
+ * 
+ * @author braden
+ *
+ */
 public abstract class Linker
 {
-	public class SnippetMatch {
+	/**
+	 * The result of matching {@link models.CodeRegion}
+	 * @see Linker#findSnippetFile(String, Timestamp, Set, Commit, boolean)
+	 */
+	private class SnippetMatch {
 		public float matchPercent;
 		public String fileName;
 		public SnippetMatch(float matchPercent, String fileName)
@@ -33,6 +45,12 @@ public abstract class Linker
 			this.fileName = fileName;
 		}
 	}
+	/**
+	 * Resultant model used in the several different linking methods
+	 * @see Linker#GetRelevantCommitsByPatch(Patch, Timestamp)
+	 * @see Linker#GetRelevantCommitsByCodeRegion(CodeRegion, Timestamp)
+	 * @see Linker#GetRelevantCommitsForFiles(List, Timestamp)
+	 */
 	public class LinkedExtraction {
 		public float Confidence;
 		public Commit commit;
@@ -103,7 +121,7 @@ public abstract class Linker
 		waitUntilFinished();
 	}
 	
-	public void waitUntilFinished() {
+	private void waitUntilFinished() {
 		execPool.shutdown();
 		try {
 			execPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
@@ -112,7 +130,7 @@ public abstract class Linker
 		}
 	}
 	
-	public void runWorker(Set<Item> itemSet)
+	private void runWorker(Set<Item> itemSet)
 	{
 		try {
 			LinkerThreadWorker worker = new LinkerThreadWorker(this);
