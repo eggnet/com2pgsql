@@ -1,24 +1,23 @@
 package bugzilla.linker;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
-
-import comm.ComResources;
 
 import linker.Linker;
 import models.Commit;
 import models.Pair;
 
+import comm.ComResources;
+
 import db.SocialDb;
-import db.LinkerDb;
+import db.TechnicalDb;
 
 public class BugzillaLinker extends Linker
 {
 
-	public BugzillaLinker(SocialDb comDb, LinkerDb linkerDb)
+	public BugzillaLinker(SocialDb comDb, TechnicalDb linkerDb)
 	{
 		super(comDb, linkerDb);
 	}

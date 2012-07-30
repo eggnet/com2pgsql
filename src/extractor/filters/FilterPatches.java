@@ -13,7 +13,6 @@ package extractor.filters;
 import models.extractor.patch.Patch;
 import java.util.List;
 
-
 public class FilterPatches implements IFilter
 {
 	private FilterTextRemover	textRemover;

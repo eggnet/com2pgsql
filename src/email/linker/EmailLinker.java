@@ -1,3 +1,9 @@
+/** 
+ * This class is used for linking emails to commits, however
+ * it is not yet implemented fully.
+ * <h3>UNIMPLEMENTED</h3>
+ */
+
 package email.linker;
 
 import java.util.ArrayList;
@@ -8,12 +14,12 @@ import linker.Linker;
 import models.Commit;
 import models.Item;
 import models.Person;
-import db.LinkerDb;
 import db.SocialDb;
+import db.TechnicalDb;
 
 public class EmailLinker extends Linker
 {
-	public EmailLinker(SocialDb comDb, LinkerDb linkerDb)
+	public EmailLinker(SocialDb comDb, TechnicalDb linkerDb)
 	{
 		super(comDb, linkerDb);
 	}
@@ -21,7 +27,7 @@ public class EmailLinker extends Linker
 	@Override
 	public void Link()
 	{
-				
+		// TODO 
 	}
 	
 	public void linkItemsByMentionedFiles(Item item, List<Person> people, List<String> files) {

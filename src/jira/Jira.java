@@ -29,9 +29,21 @@ import org.apache.http.util.EntityUtils;
 import com.google.gson.Gson;
 import comm.ComResources;
 import db.SocialDb;
-import db.LinkerDb;
 import db.TechnicalDb;
 
+/**
+ * Class to parse information from an online jira source.  Uses Gson models found in 
+ * {@code db.models.jira} and then populates the {@link SocialDb} database with the information.
+ * <br>
+ * This is also the entry point for linking Between Jira communication and changesets in the 
+ * {@link TechnicalDb}
+ * 
+ * @see db.SocialDb
+ * @see db.TechnicalDb
+ * @see com.google.gson.Gson
+ * @author braden
+ *
+ */
 public class Jira
 {
 	public int							currentIssueCount	= 1;
@@ -42,8 +54,14 @@ public class Jira
 	public TechnicalDb						linkerDb;
 	private List<TemporaryIssueLink>	tempLinks;
 	private JiraLinker					linker;
-	private static boolean				IS_INITIALIZED		= false;
 
+	/**
+	 * Used to create temporary links in the intermediate steps when linking between 
+	 * {@link models.Commit} to Jira communication models in {@code models.jira}.
+	 * @see {@code models.jira} 
+	 * @author braden
+	 *
+	 */
 	private class TemporaryIssueLink
 	{
 		private int		ItemID;
@@ -79,21 +97,44 @@ public class Jira
 		}
 	}
 
-	public void initJira(String location, TechnicalDb linkerDb, SocialDb db) throws URISyntaxException
+	/**
+	 * Initializes all of the database connections required for doing Jira parsing.
+	 * @param location
+	 * @param db
+	 * @throws URISyntaxException
+	 */
+	public void initJira(String location, SocialDb db) throws URISyntaxException
 	{
 		gson = new Gson();
 		this.location = location;
 		this.comDb = db;
 		this.tempLinks = new LinkedList<TemporaryIssueLink>();
-		this.linkerDb = linkerDb;
-		this.linker = new JiraLinker(db, linkerDb);
-		this.IS_INITIALIZED = true;
+	}
+	
+	/**
+	 * Initializes all of the database connections for doing Jira Linking.
+	 * @param location
+	 * @param comDb
+	 * @param linkDb
+	 */
+	public void initJiraLinker(String location, SocialDb comDb, TechnicalDb linkDb)
+	{
+		this.linkerDb = linkDb;
+		this.comDb = comDb;
+		this.linker = new JiraLinker(comDb, linkDb);
 	}
 
-	public void parseJira(String location, TechnicalDb linkerDb, SocialDb comDb) throws URISyntaxException
+	/**
+	 * Parses a online jira location by using their <a href="(https://developer.atlassian.com/display/JIRADEV/JIRA+REST+APIs)">REST Api</a>
+	 * into a communications database.
+	 * @param location Host to parse communications from.
+	 * @param comDb Social db connection to put models in.
+	 * @throws URISyntaxException
+	 */
+	public void parseJira(String location, SocialDb comDb) throws URISyntaxException
 	{
 		// initialize the Jira Client
-		initJira(location, linkerDb, comDb);
+		initJira(location, comDb);
 		while (currentIssueCount < totalIssueCount)
 			getNextIssues(currentIssueCount);
 
@@ -105,16 +146,18 @@ public class Jira
 				continue;
 			comDb.insertDependency(new Dependency(tLink.getItemID(), dependsID));
 		}
-
-		// -----------------------------------------------------------------------------
-		// Now that the db is imported, start linking
-		// -----------------------------------------------------------------------------
-		linkJira(location, linkerDb, comDb);
 	}
 
-	public void linkJira(String location, TechnicalDb linkerDb, SocialDb comDb) throws URISyntaxException
+	/**
+	 * Runs the Jira linker on the two databases {@link SocialDb}, {@link TechnicalDb}
+	 * @param location
+	 * @param comDb
+	 * @param linkDb
+	 * @throws URISyntaxException
+	 */
+	public void linkJira(String location, SocialDb comDb, TechnicalDb linkDb) throws URISyntaxException
 	{
-		if (!IS_INITIALIZED) initJira(location, linkerDb, comDb);
+		initJiraLinker(location, comDb, linkDb);
 		linker.Link();
 	}
 

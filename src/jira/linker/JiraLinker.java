@@ -2,7 +2,6 @@ package jira.linker;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
 import linker.Linker;
@@ -10,13 +9,12 @@ import models.Commit;
 
 import comm.ComResources;
 
-import db.LinkerDb;
 import db.SocialDb;
 import db.TechnicalDb;
 
 /**
  * <p>
- * This will serve as the controller class for Linking commits to Items.
+ * This serves as the controller class for Linking commits to Items.
  * </p>
  * @author braden
  */
@@ -50,6 +48,10 @@ public class JiraLinker extends Linker
 	}
 
 	@Override
+	/**
+	 * Links to the communications artifacts from the commit comments by searching for 
+	 * bug numbers using {@link ComResources.BUG_NUMBER_REGEX}.
+	 */
 	public void LinkFromCommitMessages()
 	{
 		if (!ComResources.LINK_FROM_COMMIT_MSGS)

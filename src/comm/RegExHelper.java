@@ -1,3 +1,14 @@
+/**
+ * Slightly modified version of InfoZilla's FilterPatches.java, for use 
+ * by the Eggnet Social-Technical Network project.
+ * 
+ * Credit : InfoZilla Tool
+ * <a href='http://groups.csail.mit.edu/pag/pubs/bettenburg-msr-2008.pdf'>
+ * Extracting Structural Information From Bug Reports
+ * </a>
+ * @authors Nicolas Bettenburg, Rahul Premraj, Thomas Zimmermann, Sunghun Kim
+ */
+
 package comm;
 
 import java.util.ArrayList;

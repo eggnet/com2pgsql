@@ -13,9 +13,8 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
 import bugzilla.Bugzilla;
-import db.SocialDb;
-import db.LinkerDb;
 import db.Resources;
+import db.SocialDb;
 import db.TechnicalDb;
 
 public class Main
@@ -129,7 +128,7 @@ public class Main
 				// Check for jira
 				if (line.hasOption("j")) {
 					String[] values = line.getOptionValues("j");
-					if (values.length > 4 || values.length < 3) {
+					if (values.length > 4 || values.length < 2) {
 						System.out.println("-j flag used incorrectly");
 						printMan();
 						return;
@@ -138,19 +137,16 @@ public class Main
 						jira = new Jira();
 						if (values[0].equals("-l"))
 						{
-							// only link.
 							db.connect(values[1], ComResources.COM_QUEUE_WORKER_LIMIT);
 							linkdb.connect(values[2]);
 							linkdb.setBranchName("master");
-							jira.linkJira(null, linkdb, db);
+							jira.linkJira(null, db, linkdb);
 						}
 						else
 						{
 							System.out.println("Running Jira parser on " + line.getOptionValue("j"));
 							db.connect(values[0], ComResources.COM_QUEUE_WORKER_LIMIT);
-							linkdb.connect(values[1]);
-							linkdb.setBranchName("master");
-							jira.parseJira(values[2], linkdb, db);
+							jira.parseJira(values[1], db);
 						}
 					}
 				}

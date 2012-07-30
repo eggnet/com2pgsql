@@ -66,7 +66,6 @@ public class Extractor
 		FilterSourceCodeJAVA sourcecodeFilter = new FilterSourceCodeJAVA(ComResources.class.getResource("Java_CodeDB.txt"));
 
 		List<Extraction> keys = new LinkedList<Extraction>();
-
 		if (item.getBody() != null)
 			keys.addAll(extractItemBody(item, patchFilter, stacktraceFilter, sourcecodeFilter));
 		if (item.getTitle() != null)
@@ -74,6 +73,12 @@ public class Extractor
 		return keys;
 	}
 
+	/**
+	 * Finds {@link Extraction}s from the title by searching for CommitIDs, and
+	 * Bug numbers specified by Regex in {@link ComResources}
+	 * @param item
+	 * @return
+	 */
 	private List<Extraction> extractItemSummary(Item item)
 	{
 		List<Extraction> titleKeys = new ArrayList<Extraction>();
@@ -82,6 +87,15 @@ public class Extractor
 		return titleKeys;
 	}
 	
+	/**
+	 * Finds {@link Extraction}s from the body by searching for CommitIDs, Bug numbers,
+	 * {@link Patch}, {@link StackTrace}, {@link CodeRegion}.
+	 * @param item
+	 * @param patchFilter
+	 * @param stacktraceFilter
+	 * @param sourcecodeFilter
+	 * @return List of these {@link Extractions}
+	 */
 	private List<Extraction> extractItemBody(Item item, FilterPatches patchFilter, FilterStackTraceJAVA stacktraceFilter, FilterSourceCodeJAVA sourcecodeFilter)
 	{
 		List<Extraction> bodyKeys = matchSHA1(item.getBody(), item.getItemDate());
@@ -122,6 +136,12 @@ public class Extractor
 		return null;
 	}
 
+	/**
+	 * Matches the input text with the regex supplied in {@link ComResources.BUG_NUMBER_REGEX}
+	 * @param input
+	 * @param timestamp
+	 * @return List of {@link Extraction} with their timestamp
+	 */
 	private List<Extraction> matchBugNumber(String input, Timestamp timestamp)
 	{
 		List<Extraction> extractions = new LinkedList<Extraction>();
@@ -131,10 +151,16 @@ public class Extractor
 		return extractions;
 	}
 
+	/**
+	 * Match the input with the regex supplied in {@link ComResources.CHANGESET_ID_REGEX}
+	 * @param input
+	 * @param timestamp
+	 * @return List of {@link Extraction} with their timestamp
+	 */
 	private List<Extraction> matchSHA1(String input, Timestamp timestamp)
 	{
 		List<Extraction> extractions = new LinkedList<Extraction>();
-		Matcher matcher = ComResources.SHA1_REGEX.matcher(input);
+		Matcher matcher = ComResources.CHANGESET_ID_REGEX.matcher(input);
 		while (matcher.find())
 			extractions.add(new Extraction(TextType.COMMITID, matcher.group(), timestamp));
 		return extractions;
